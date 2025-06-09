@@ -3,10 +3,12 @@
 import styles from "./FourSlider.module.css";
 import React, { useState, useEffect } from 'react';
 import Image from "next/image";
+import {useRouter} from "next/navigation";
 
 const FourSlider = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
-  
+  const router = useRouter();
+
     const slides = [
       {
         id: 1,
@@ -16,7 +18,8 @@ const FourSlider = () => {
         alt: "AI-Powered Ordering Apps: The Future of B2B Sales",
         author: "Aravindan Varatharajan",
         authorpic:"/images/Admin/aravindan.jpg",
-        date: "June 23, 2024"
+        date: "June 23, 2024",
+        slug: "/ai-powered-ordering-apps-the-future-of-b2b-sales"
       },
       {
         id: 2,
@@ -26,7 +29,8 @@ const FourSlider = () => {
         alt: "Everything You Need To Know About B2B eCommerce",
         author: "Sudhakar Varatharajan",
         authorpic: "/images/Admin/sudhakar.jpg",
-        date: "December 10, 2021"
+        date: "December 10, 2021",
+        slug: "/everything-you-need-to-know-about-b2b-ecommerce"
       },
       {
         id: 3,
@@ -36,7 +40,8 @@ const FourSlider = () => {
         alt: "Make 2X Faster Decisions In Your Sales Cycle",
         author: "Sudhakar Varatharajan",
         authorpic: "/images/Admin/sudhakar.jpg",
-        date: "December 23, 2021"
+        date: "December 23, 2021",
+        slug: "/make-2x-faster-decisions-in-your-sales-cycle"
       },
       {
         id: 4,
@@ -46,7 +51,8 @@ const FourSlider = () => {
         alt: "Digital Can Drive 5X Growth For B2B Companies",
         author: "Aravindan Varatharajan",
         authorpic:"/images/Admin/sudhakar.jpg",
-        date: "September 22, 2021"
+        date: "September 22, 2021",
+        slug: "/digital-can-drive-5x-growth-for-b2b-companies"
       },
       {
         id: 5,
@@ -56,7 +62,8 @@ const FourSlider = () => {
         alt: "Your Traditional Competitors Are Not Your Only Threats",
         author: "Gnanavel Sivasami",
         authorpic: "/images/Admin/Gnanavel.png",
-        date: "December 23, 2021"
+        date: "December 23, 2021",
+        slug: "/your-traditional-competitors-are-not-your-threats"
       }
     ];
   
@@ -81,6 +88,10 @@ const FourSlider = () => {
     const goToSlide = (index) => {
       setCurrentSlide(index);
     };
+
+    const handleRouting = (slug) => {
+      router.push(slug);
+    }
     
     return (
       <div className={styles.sliderMainContainer}>
@@ -94,7 +105,7 @@ const FourSlider = () => {
             style={{ transform: `translateX(-${currentSlide * 100}%)` }}
           >
             {slides.map((slide) => (
-              <div key={slide.id} className={styles.slide}>
+              <div key={slide.id} className={styles.slide}onClick={() => handleRouting(slide.slug)}>
                 <div className={styles.slideContent}>
                   <div className={styles.contentSection}>
                     <div className={styles.blogContent}>

@@ -71,6 +71,7 @@
 .slide {
   width: 100%;
   flex-shrink: 0;
+  cursor: pointer;
 }
 
 .slideContent {
