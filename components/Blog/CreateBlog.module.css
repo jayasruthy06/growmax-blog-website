@@ -1,0 +1,244 @@
+.createBlogFormWrap{
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-direction: column;
+  padding: 0 20px; 
+  overflow: auto;
+  height: 100vh;
+}
+
+.createBlogHeading{
+  font-size: 30px;
+  color: var(--red-primary);
+  font-weight: bold;
+  text-align: left;
+  margin-top: 0px;
+}
+
+.createBlogFormContainer{
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  max-width: 800px; 
+}
+
+.createblogLabel{
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--red-dark);
+  margin-bottom: 10px;
+}
+
+.createblogInput{
+  font-size: 1rem;
+}
+
+.createblogInput[type="text"], .createblogInput[type="email"], .createblogInput[type="tel"], .createblogInput[type="password"]{
+  width: 100%;
+  height: 15px;
+  border: 2px solid rgb(205, 205, 205);
+  border-radius: 10px;
+  outline: none;
+  font-family: Outfit;
+  padding: 20px;
+  margin-bottom: 10px;
+  box-sizing: border-box; 
+}
+
+.blogTextArea{
+  width: 100%;
+  height: 110px;
+  border: 2px solid rgb(205, 205, 205);
+  border-radius: 10px;
+  outline: none;
+  resize: none;
+  padding: 10px;
+  font-family: Outfit;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+}
+
+.createblogInput[type="file"]{
+  width: 100%;
+  height: 45px;
+  border: 2px solid rgb(205, 205, 205);
+  border-radius: 10px;
+  outline: none;
+  font-family: Outfit;
+  padding: 10px;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+}
+
+.createblogInput[type="date"]{
+  width: 200px;
+  height: 15px;
+  border: 2px solid rgb(205, 205, 205);
+  border-radius: 10px;
+  outline: none;
+  font-family: Outfit;
+  padding: 20px;
+  margin-bottom: 10px;
+  padding-bottom: 20px;
+  box-sizing: border-box;
+}
+
+
+.createblogInput[list]{
+  width: 400px;
+  height: 15px;
+  border: 2px solid rgb(205, 205, 205);
+  border-radius: 10px;
+  outline: none;
+  font-family: Outfit;
+  padding: 20px;
+  margin-bottom: 10px;
+  padding-bottom: 20px;
+  box-sizing: border-box;
+}
+
+.myQuillEditor{
+  overflow: auto;
+}
+
+.updateButton, .deleteButton{
+  border: none;
+  outline: none;
+  font-family: Outfit, sans-serif;
+  font-weight: bold;
+  font-size: 12px;
+  margin-right: 10px;
+  border-radius: 10px;
+  box-shadow: var(--box-shadow);
+  padding: 10px;
+  color: white;
+  cursor: pointer;
+}
+
+.updateButton{
+  background-color: var(--red-dark);
+}
+
+.deleteButton{
+  background-color: var(--orange-primary);
+}
+
+.updateButton:hover, .deleteButton:hover{
+  transform: translate(0px, -3px);
+  box-shadow: var(--box-shadow);
+  transition: transform 0.3s ease;
+}
+
+.updateButton:active{
+  background-color:var(--red-primary) ;
+}
+
+.deleteButton:active{
+  background-color:var(--orange-alt);
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+  .createBlogFormContainer {
+    width: 70%;
+  }
+
+  .createblogInput[list] {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .createBlogFormContainer {
+    width: 85%;
+  }
+  
+  .createBlogHeading {
+    font-size: 26px;
+    text-align: center;
+  }
+  
+  .dropdown {
+    width: 100%;
+  }
+  
+  .createblogInput[type="date"] {
+    width: 100%;
+  }
+  
+  .blogButton[type="submit"] {
+    width: 120px;
+    align-self: center;
+  }
+
+}
+
+@media (max-width: 480px) {
+  .createblogInput[type="file"]{
+    height: 50px;
+    font-size: 12px;
+  }
+  .createBlogFormWrap {
+    margin-top: 20px;
+    padding: 0 15px;
+  }
+  
+  .createBlogFormContainer {
+    width: 100%;
+  }
+  
+  .createBlogHeading {
+    font-size: 22px;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .createblogLabel{
+    font-size: 14px;
+  }
+  
+  .createblogInput[type="text"],
+  .blogTextArea,
+  .createblogInput[type="file"],
+  .createblogInput[type="date"],
+  .createblogInput[list] {
+    font-size: 16px; 
+    padding: 12px;
+  }
+  
+  .blogTextArea {
+    height: 80px;
+  }
+  
+  .blogButton[type="submit"]{
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    margin-top: 20px;
+  }
+}
+
+@media (max-width: 320px) {
+  .createBlogFormWrap {
+    padding: 0 10px;
+  }
+  
+  .createBlogHeading {
+    font-size: 20px;
+  }
+  
+  .createblogInput[type="text"],
+  .blogTextArea,
+  .createblogInput[type="file"],
+  .createblogInput[type="date"],
+  .createblogInput[list] {
+    padding: 10px;
+  }
+  
+  .blogButton[type="submit"] {
+    padding: 10px;
+    font-size: 14px;
+  }
+}

@@ -1,0 +1,43 @@
+.blogTextContentBox h1,
+.blogTextContentBox h2,
+.blogTextContentBox h3 {
+  font-weight: bold;
+  margin: 1em 0;
+  color: var(--red-dark)
+}
+
+.blogTextContentBox h1 { font-size: 2em; }
+.blogTextContentBox h2 { font-size: 1.5em; }
+.blogTextContentBox h3 { font-size: 1.25em; }
+
+.blogTextContentBox p {
+  margin: 1em 0;
+  line-height: 1.6;
+  color: var(--text-gray)
+}
+
+.blogTextContentBox strong {
+  font-weight: bold;
+}
+
+.blogTextContentBox em {
+  font-style: italic;
+}
+
+.blogTextContentBox ul, 
+.blogTextContentBox ol {
+  margin: 1em 0;
+  padding-left: 2em;
+}
+
+.blogTextContentBox blockquote {
+  border-left: 4px solid #ccc;
+  margin: 1em 0;
+  padding-left: 1em;
+  font-style: italic;
+}
+
+.blogTextContentBox p img{
+  width: 100%;
+  height: auto;
+}

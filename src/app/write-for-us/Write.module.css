@@ -1,0 +1,73 @@
+.writeForUsWrap {
+    display: flex;
+    flex-direction: row;
+    margin: 0 5vw;
+    gap: 20px;
+    flex-wrap: wrap; 
+}
+
+.writeForUsContainer, .faq {
+    flex: 1 1 45%;
+    border-radius: 20px;
+    box-shadow: var(--box-shadow);
+    padding: 15px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.passageHeading h3 {
+    margin-left: 30px;
+    font-size: 30px;
+    color: var(--red-primary);
+    font-family: Outfit;
+    margin-bottom: 0px;
+}
+
+.passageSubtitle {
+    margin-left: 30px;
+    font-size: 20px;
+}
+
+.passageText {
+    color: var(--text-gray);
+    font-size: 15px;
+    margin-left: 30px;
+}
+
+.processList {
+    list-style: decimal;
+    margin-left: 50px;
+}
+
+.passageText ul {
+    margin-left: 50px;
+    padding-left: 0;
+}
+
+.passageText li {
+    margin-bottom: 5px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .writeForUsWrap {
+        flex-direction: column;
+        margin: 0 20px;
+    }
+
+    .writeForUsContainer, .faq {
+        flex: 1 1 100%;
+        max-height: none;
+    }
+
+    .passageHeading h3,
+    .passageSubtitle,
+    .passageText {
+        margin-left: 15px;
+    }
+
+    .processList,
+    .passageText ul {
+        margin-left: 30px;
+    }
+}

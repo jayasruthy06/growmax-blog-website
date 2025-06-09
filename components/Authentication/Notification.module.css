@@ -1,0 +1,141 @@
+.notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  min-width: 320px;
+  max-width: 450px;
+  border-radius: 12px;
+  box-shadow: var(--box-shadow);
+  backdrop-filter: blur(10px);
+  animation: slideInRight 0.4s ease-out;
+  font-family: Outfit;
+}
+
+.success {
+  background: var(--red-primary);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.error {
+  background: var(--orange-primary);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.notificationContent {
+  display: flex;
+  align-items: flex-start;
+  padding: 16px 20px;
+  gap: 12px;
+}
+
+.notificationIcon {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2px;
+}
+
+.notificationMessage {
+  flex: 1;
+  min-width: 0;
+}
+
+.notificationMessage h4 {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.notificationMessage p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.4;
+  opacity: 0.95;
+}
+
+.notificationClose {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: currentColor;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  opacity: 0.7;
+  margin-top: -2px;
+}
+
+.notificationClose:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.1);
+  transform: scale(1.1);
+}
+
+.notificationClose:active {
+  transform: scale(0.95);
+}
+
+/* Animations */
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .notification {
+    left: 20px;
+    right: 20px;
+    min-width: auto;
+    max-width: none;
+    top: 10px;
+  }
+  
+  .notificationContent {
+    padding: 14px 16px;
+    gap: 10px;
+  }
+  
+  .notificationMessage h4 {
+    font-size: 15px;
+  }
+  
+  .notificationMessage p {
+    font-size: 13px;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .notification {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .notification {
+    animation: none;
+  }
+  
+  .notificationClose {
+    transition: none;
+  }
+}

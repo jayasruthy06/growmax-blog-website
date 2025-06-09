@@ -1,0 +1,93 @@
+.loginBody{
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(45deg, var(--red-primary),var(--orange-primary));
+
+}
+
+.loginBox {
+  background-color: var(--box-bg-alt);
+  border-radius: 12px;
+  padding: 50px 50px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: var(--box-shadow);
+  text-align: center;
+}
+
+.loginLabel{
+  font-family: Outfit;
+  font-weight: bold;
+}
+
+.loginHeading {
+  margin-bottom: 20px;
+  color:var(--red-dark);
+  font-size: 30px;
+  font-weight: bold;
+  font-family: Outfit;
+}
+
+.loginWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.loginFieldWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: left;
+}
+
+.loginInput[type="text"],
+.loginInput[type="password"],
+.loginInput[type="email"] {
+  padding: 10px 12px;
+  font-size: 16px;
+  border: 2px solid #c3c2c2;
+  border-radius: 6px;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: Outfit;
+  background-color: var(--box-bg-light);
+}
+
+.toggleEye {
+  color: var(--orange-alt);
+}
+
+.loginButton button {
+  margin-top: 20px;
+  background-color: var(--orange-primary);
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 100%;
+  font-family: Outfit;
+  font-weight: bold;
+}
+
+.loginButton button:hover {
+  background-color: var(--orange-alt);
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+  .loginBox {
+    padding: 25px 20px;
+  }
+
+  .loginHeading {
+    font-size: 20px;
+  }
+}

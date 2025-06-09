@@ -1,0 +1,178 @@
+.motto{
+    margin: 60px 120px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.mottoText{
+    text-align: center;
+    color: var(--red-primary);
+    font-size: 40px;
+}
+
+.aboutVisionMission {
+  max-width: 1000px;
+  margin: 50px auto; 
+  padding: 0 20px; 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+}
+
+.aboutText,
+.visionText,
+.missionText {
+  text-align: justify; 
+}
+
+.textTitle {
+  font-size: 30px;
+  color: var(--orange-primary);
+  font-weight: bold;
+  margin-bottom: 10px;
+  
+}
+
+.textPassage {
+  font-size: 20px;
+  line-height: 1.6;
+  color: var(--text-grey);
+}
+
+.meetTheTeam{
+    color: var(--red-primary);
+    text-align: center;
+    font-size: 30px;
+}
+
+.teamContainer {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.teamGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    width: 100%;
+}
+
+.teamCard {
+    display: flex;
+    flex-direction: column;
+    border-radius: 8px;
+    box-shadow: var(--box-shadow);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+    padding-top: 40px;
+    background-color: var(--box-bg-light);
+}
+
+.teamCard:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15), 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+.teamCardImage {
+    width: 140px;
+    height: 140px;
+    object-fit: cover;
+    display: block;
+    border-radius: 50%;
+}
+
+.textContainer {
+    margin-top: 10px;
+    flex: 1;
+}
+
+.teamCardTitle {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--orange-alt);
+    text-align: center;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .teamGrid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+            
+    .teamCardTitle {
+        font-size: 16px;
+    }
+            
+    .teamCardImage {
+        height: 100px;
+        width: 100px;
+    }
+}
+
+@media (max-width: 480px) {
+    .teamGrid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+            
+    .teamContainer {
+        padding: 15px;
+    }
+    .teamCardImage{
+        height: 80px;
+        width: 80px;
+    }
+}
+
+@media (max-width: 1170px){
+    .teamCardImage{
+        height: 130px;
+        width: 130px;
+    }
+}
+
+@media screen and (max-width: 900px){
+    .textTitle{
+        font-size: 25px;
+    }
+    .textPassage{
+        font-size: 16px;
+    }
+    .motto{
+        margin: 60px 80px;
+    }
+    .mottoText{
+        font-size: 30px;
+    }
+    .meetTheTeam{
+        font-size: 25px;
+    }
+}
+
+@media screen and (max-width: 636px){
+    .textTitle{
+        font-size: 20px;
+    }
+    .textPassage{
+        font-size: 16px;
+    }
+    .motto{
+        margin: 60px 40px;
+    }
+    .mottoText{
+        font-size: 25px;
+    }
+    .meetTheTeam{
+        font-size: 20px;
+    }
+}
