@@ -153,7 +153,7 @@ const BlogPageText = ({ reqslug }) => {
                               color: '#666'
                             }}
                           >
-                            {authorname ? authorname.charAt(0).toUpperCase() : 'A'}
+                            {blog.authorname ? blog.authorname.charAt(0).toUpperCase() : 'A'}
                           </div>
                         )
                         }
