@@ -27,7 +27,7 @@ export async function POST(req) {
       }), {status: 401};
     }
 
-    const absoluteExpiryMs = 5 * 60 * 1000; // testing, should be 7 days
+    const absoluteExpiryMs = 7 * 24 * 60 * 60 * 1000; // alter token expiry date here
     const tokenAge = Date.now() - decoded.issuedAt;
 
     if (tokenAge > absoluteExpiryMs) {
@@ -74,8 +74,8 @@ export async function POST(req) {
 
     response.headers.set(
       'Set-Cookie',
-      `token=${newToken}; HttpOnly; Path=/; Max-Age=${5 * 60 * 1000}; SameSite=Strict`
-    ); //testing set max age to 7 days
+      `token=${newToken}; HttpOnly; Path=/; Max-Age=${7 * 24 * 60 * 60 * 1000}; SameSite=Strict`
+    ); //alter token max age 
 
     return response;
   } catch (error) {

@@ -43,8 +43,8 @@ export async function POST(req) {
 
     response.headers.set(
       'Set-Cookie',
-      `auth_token=${token}; HttpOnly; Path=/; Max-Age=${5 * 60 * 1000}; SameSite=Strict`
-    ); //testing set max-age to 7 days
+      `auth_token=${token}; HttpOnly; Path=/; Max-Age=${7 * 24 * 60 * 60 * 1000}; SameSite=Strict`
+    ); //alter token age duration
 
     response.headers.set('X-Content-Type-Options', 'nosniff');
     response.headers.set('X-Frame-Options', 'DENY');

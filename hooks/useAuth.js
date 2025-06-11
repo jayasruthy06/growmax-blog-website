@@ -11,7 +11,6 @@ export const useAuth = () => {
 
   const refreshToken = useCallback(async () => {
     try {
-      console.log('calling refresh api');//testing, needs to be removed
       const response = await fetch('/api/auth/refresh', {
         method: 'POST',
         credentials: 'include'
@@ -98,12 +97,11 @@ export const useAuth = () => {
     if (!user) return;
 
     const interval = setInterval(async () => {
-      console.log("calling refresh api function")//testing, should be removed
       const success = await refreshToken();
       if (!success) {
         logout();
       }
-    }, 15 * 1000); //testing, should be 10 minutes
+    }, 10 * 60 * 1000); //alter token refresh duration
 
     return () => clearInterval(interval);
   }, [user, refreshToken, logout]);
