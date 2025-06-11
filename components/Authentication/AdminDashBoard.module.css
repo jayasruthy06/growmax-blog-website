@@ -197,14 +197,20 @@
     .dashboardSidebarWrap{
         margin-top: 0px;
         flex-direction: column;
+        width: 90%;
+        align-items: center;
+        justify-content: center;
     }
     .dashboardSidebarContainer{
         height: 200px;
-        width: 150px;
+        width: 90%;
+    }
+    .dashboardButton{
+       width: 300px;
     }
 }
 
-@media screen and (max-width: 360px) {
+@media screen and (max-width: 376px) {
     .dashboardSidebarContainer {
         padding: 8px;
     }
@@ -216,6 +222,7 @@
     .dashboardButton {
         font-size: 13px;
         padding: 5px 8px;
+        width: 200px;
         min-width: 70px;
     }
 }

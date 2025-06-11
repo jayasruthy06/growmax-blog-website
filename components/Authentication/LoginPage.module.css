@@ -1,33 +1,43 @@
-.loginBody{
+.loginBody {
   margin: 0;
-  padding: 0;
-  height: 100vh;
+  padding: 16px;
+  min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(45deg, var(--red-primary),var(--orange-primary));
-
+  background: linear-gradient(45deg, var(--red-primary), var(--orange-primary));
 }
 
 .loginBox {
   background-color: var(--box-bg-alt);
   border-radius: 12px;
-  padding: 50px 50px;
-  width: 90%;
-  max-width: 400px;
+  padding: 40px 30px;
+  width: 100%;
+  max-width: 420px;
   box-shadow: var(--box-shadow);
   text-align: center;
+  margin: 16px;
 }
 
-.loginLabel{
+.loginLogo {
+  margin-bottom: 30px;
+}
+
+.loginLogo img {
+  max-width: 100%;
+  height: auto;
+}
+
+.loginLabel {
   font-family: Outfit;
   font-weight: bold;
+  font-size: 14px;
 }
 
 .loginHeading {
   margin-bottom: 20px;
-  color:var(--red-dark);
-  font-size: 30px;
+  color: var(--red-dark);
+  font-size: 28px;
   font-weight: bold;
   font-family: Outfit;
 }
@@ -41,14 +51,14 @@
 .loginFieldWrapper {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
   text-align: left;
 }
 
 .loginInput[type="text"],
 .loginInput[type="password"],
 .loginInput[type="email"] {
-  padding: 10px 12px;
+  padding: 12px 14px;
   font-size: 16px;
   border: 2px solid #c3c2c2;
   border-radius: 6px;
@@ -56,17 +66,36 @@
   box-sizing: border-box;
   font-family: Outfit;
   background-color: var(--box-bg-light);
+  transition: border-color 0.3s ease;
+}
+
+.loginInput[type="text"]:focus,
+.loginInput[type="password"]:focus,
+.loginInput[type="email"]:focus {
+  outline: none;
+  border-color: var(--orange-primary);
+}
+
+.passwordContainer {
+  position: relative;
+  width: 100%;
 }
 
 .toggleEye {
   color: var(--orange-alt);
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  z-index: 1;
 }
 
 .loginButton button {
   margin-top: 20px;
   background-color: var(--orange-primary);
   color: white;
-  padding: 12px 20px;
+  padding: 14px 20px;
   border: none;
   border-radius: 6px;
   font-size: 16px;
@@ -81,13 +110,185 @@
   background-color: var(--orange-alt);
 }
 
+.loginButton button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.demoAccounts {
+  font-family: Outfit;
+  font-size: 12px;
+  margin-top: 20px;
+}
+
+.demoAccountsTitle {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.demoAccountsContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.demoAccount {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background-color: var(--box-bg-light);
+  padding: 12px 8px;
+  box-shadow: var(--box-shadow);
+  border-radius: 6px;
+  flex: 1;
+}
+
+.demoAccount p {
+  margin: 0;
+  line-height: 1.3;
+  text-align: center;
+}
+
+.demoAccount .accountType {
+  font-weight: bold;
+  color: var(--red-dark);
+}
+
+.forgotPassword {
+  font-size: 14px;
+  color: var(--red-dark);
+  font-weight: bold;
+  font-family: Outfit;
+  text-decoration: underline;
+  text-align: center;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: color 0.3s ease;
+}
+
+.forgotPassword:hover {
+  color: var(--orange-primary);
+}
+
 /* Responsive Design */
+@media (max-width: 768px) {
+  .loginBox {
+    padding: 35px 25px;
+    margin: 12px;
+  }
+
+  .loginHeading {
+    font-size: 24px;
+  }
+
+  .loginInput[type="text"],
+  .loginInput[type="password"],
+  .loginInput[type="email"] {
+    padding: 12px;
+    font-size: 16px;
+  }
+}
+
 @media (max-width: 480px) {
+  .loginBody {
+    padding: 12px;
+  }
+
   .loginBox {
     padding: 25px 20px;
+    margin: 8px;
+    max-width: 100%;
+  }
+
+  .loginHeading {
+    font-size: 22px;
+    margin-bottom: 15px;
+  }
+
+  .loginLogo {
+    margin-bottom: 20px;
+  }
+
+  .loginInput[type="text"],
+  .loginInput[type="password"],
+  .loginInput[type="email"] {
+    padding: 12px;
+    font-size: 16px;
+    min-height: 44px; 
+  }
+
+  .loginButton button {
+    padding: 14px 16px;
+    font-size: 16px;
+    min-height: 48px; 
+  }
+
+  .demoAccounts {
+    font-size: 11px;
+  }
+
+  .demoAccountsContainer {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .demoAccount {
+    padding: 10px;
+  }
+
+  .forgotPassword {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 360px) {
+  .loginBox {
+    padding: 20px 16px;
   }
 
   .loginHeading {
     font-size: 20px;
+  }
+
+  .demoAccounts {
+    font-size: 10px;
+  }
+
+  .demoAccount {
+    padding: 8px 6px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .loginBox {
+    max-width: 450px;
+    padding: 50px 40px;
+  }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+  .loginBody {
+    padding: 8px;
+  }
+
+  .loginBox {
+    padding: 20px;
+    margin: 4px;
+  }
+
+  .loginLogo {
+    margin-bottom: 15px;
+  }
+
+  .loginHeading {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+
+  .demoAccounts {
+    margin-top: 15px;
   }
 }

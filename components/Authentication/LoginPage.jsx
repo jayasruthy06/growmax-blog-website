@@ -2,10 +2,10 @@
 
 import React, { useEffect, useState } from 'react';
 import styles from "./LoginPage.module.css";
-import { Eye , EyeOff } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 import Image from "next/image";
 import Notification from "../../components/Authentication/Notification";
-import {useRouter} from "next/navigation";
+import { useRouter } from "next/navigation";
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -40,67 +40,75 @@ const LoginPage = () => {
     return password.length >= 8 && specialCharCount > 0;
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     const isLoggedIn = document.cookie.includes('token=');
-    if(isLoggedIn){
+    if (isLoggedIn) {
       setAlreadyLoggedIn(true);
     }
   }, []);
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (alreadyLoggedIn) {
-    showNotification("error", "User already logged in!");
-    return;
-  }
-
-  if (!isEmailValid(email)) {
-    showNotification("error", "Please check your Email!");
-    return;
-  }
-
-  if (!isPasswordValid(password)) {
-    showNotification("error", "Password must be at least 8 characters and include a special character.");
-    return;
-  }
-
-  try {
-    setLoggingIn(true);
-    console.log(JSON.stringify({email, password}))
-    const res = await fetch(`/api/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      showNotification("error", data.error || "Something went wrong!");
+    if (alreadyLoggedIn) {
+      showNotification("error", "User already logged in!");
       return;
     }
 
-    setLoggingIn(false);
-    showNotification("success", data.message || "Login successful!");
+    if (!isEmailValid(email)) {
+      showNotification("error", "Please check your Email!");
+      return;
+    }
 
-    // ✅ Redirect to homepage after login
-    router.push("/");
+    if (!isPasswordValid(password)) {
+      showNotification("error", "Password must be at least 8 characters and include a special character.");
+      return;
+    }
 
-  } catch (err) {
-    showNotification("error", "Network error!");
-  }
-  finally{
-    setLoggingIn(false);
-  }
-};
+    try {
+      setLoggingIn(true);
+      console.log(JSON.stringify({ email, password }))
+      const res = await fetch(`/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
 
+      const data = await res.json();
 
-useEffect(() => {
-  if (document.cookie.includes('token=')) {
-    window.location.href = "/";
-  }
-}, []);
+      if (!res.ok) {
+        showNotification("error", data.error || "Something went wrong!");
+        return;
+      }
+
+      setLoggingIn(false);
+      showNotification("success", data.message || "Login successful!");
+
+      router.push("/");
+
+    } catch (err) {
+      showNotification("error", "Network error!");
+    }
+    finally {
+      setLoggingIn(false);
+    }
+  };
+
+  useEffect(() => {
+    if (document.cookie.includes('token=')) {
+      window.location.href = "/";
+    }
+  }, []);
+
+  const fillDemoCredentials = (userType) => {
+    if (userType === 'admin') {
+      setEmail('sampleadmin@test.com');
+      setPassword('sampleadmin123$');
+    } else if (userType === 'editor') {
+      setEmail('sampleeditor@test.com');
+      setPassword('sampleeditor123$');
+    }
+  };
 
   return (
     <div className={styles.loginBody}>
@@ -112,58 +120,128 @@ useEffect(() => {
       />
       <div className={styles.loginBox}>
         <div className={styles.loginLogo}>
-          <Image src="/images/HomePageImg/growmax_logo.png" width={200} height={60} alt="Growmax Logo in the Login Page" />
+          <Image 
+            src="/images/HomePageImg/growmax_logo.png" 
+            width={200} 
+            height={60} 
+            alt="Growmax Logo in the Login Page"
+            priority
+          />
         </div>
-        <div className={styles.loginWrapper}>
-          <div className={styles.loginFieldWrapper}>
-            <label className={styles.loginLabel}>Email:</label>
-            <input className={styles.loginInput} type="email" placeholder="Enter your email" value={email} onChange={(e) => setEmail(e.target.value)} />
 
-            <label className={styles.loginLabel}>Password:</label>
-            <div className={styles.passwordContainer} style={{ position: 'relative' }}>
+        <form onSubmit={handleSubmit} className={styles.loginWrapper}>
+          <div className={styles.loginFieldWrapper}>
+            <label className={styles.loginLabel} htmlFor="email">
+              Email:
+            </label>
+            <input 
+              id="email"
+              className={styles.loginInput} 
+              type="email" 
+              placeholder="Enter your email" 
+              value={email} 
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              autoComplete="email"
+            />
+
+            <label className={styles.loginLabel} htmlFor="password">
+              Password:
+            </label>
+            <div className={styles.passwordContainer}>
               <input
+                id="password"
                 type={showPassword ? 'text' : 'password'}
                 placeholder="Enter your password"
-                style={{ paddingRight: '40px' }}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className={styles.loginInput}
+                required
+                autoComplete="current-password"
               />
-              <span className={styles.toggleEye} onClick={togglePassword}
-                style={{
-                  position: 'absolute',
-                  right: '10px',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  cursor: 'pointer',
-                }}>
-                {showPassword ? <Eye/> : <EyeOff/>}
+              <span 
+                className={styles.toggleEye} 
+                onClick={togglePassword}
+                role="button"
+                tabIndex={0}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    togglePassword();
+                  }
+                }}
+              >
+                {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
               </span>
             </div>
-            <p style={{fontSize: "15px", color: "var(--red-dark)", fontWeight: "bold", fontFamily: "Outfit", textDecoration:"underline", textAlign:"center", cursor: "pointer"}} onClick={()=>router.push("/forgot-password")}>Forgot Password?</p>
+
+            <p 
+              className={styles.forgotPassword} 
+              onClick={() => router.push("/forgot-password")}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  router.push("/forgot-password");
+                }
+              }}
+            >
+              Forgot Password?
+            </p>
+          </div>
+
+          <div className={styles.loginButton}>
+            <button 
+              type="submit" 
+              disabled={loggingIn}
+              aria-label={loggingIn ? "Logging in..." : "Log in to your account"}
+            >
+              {loggingIn ? "LOGGING IN..." : "LOG IN"}
+            </button>
+          </div>
+        </form>
+
+        <div className={styles.demoAccounts}>
+          <p className={styles.demoAccountsTitle}>Demo Accounts:</p>
+          <div className={styles.demoAccountsContainer}>
+            <div 
+              className={styles.demoAccount}
+              onClick={() => fillDemoCredentials('admin')}
+              role="button"
+              tabIndex={0}
+              aria-label="Fill admin demo credentials"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  fillDemoCredentials('admin');
+                }
+              }}
+            >
+              <p className={styles.accountType}>Admin User:</p>
+              <p>Email: sampleadmin@test.com</p>
+              <p>Password: sampleadmin123$</p>
+            </div>
+            <div 
+              className={styles.demoAccount}
+              onClick={() => fillDemoCredentials('editor')}
+              role="button"
+              tabIndex={0}
+              aria-label="Fill editor demo credentials"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  fillDemoCredentials('editor');
+                }
+              }}
+            >
+              <p className={styles.accountType}>Editor User:</p>
+              <p>Email: sampleeditor@test.com</p>
+              <p>Password: sampleeditor123$</p>
+            </div>
           </div>
         </div>
-
-        <div className={styles.loginButton}>
-          <button onClick={handleSubmit}>{loggingIn? "LOGGING IN...": "LOG IN"}</button>
-        </div>
-
-        <div style={{fontFamily: "Outfit", fontSize: "12px", marginTop: "10px"}}>
-        <p style={{fontWeight: "bold"}}>Demo Accounts:</p>
-      <div style={{display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
-        <div style={{display: "flex", flexDirection: "column", alignItems: "center", gap: "0px", backgroundColor: "var(--box-bg-light)", padding: "10px", boxShadow:"var(--box-shadow)"}}>
-          <p style={{marginTop: "0px", marginBottom: "0px", fontWeight: "bold"}}>Admin User:</p>
-          <p style={{marginTop: "0px", marginBottom: "0px"}}>Email: sampleadmin@test.com</p>
-          <p style={{marginTop: "0px", marginBottom: "0px"}}>Password: sampleadmin123$</p>
-        </div>
-        <div style={{display: "flex", flexDirection: "column", alignItems: "center", backgroundColor: "var(--box-bg-light)", padding: "10px", boxShadow:"var(--box-shadow)", gap: "0px"}}>
-          <p style={{marginTop: "0px", marginBottom: "0px", fontWeight: "bold"}}>Editor User:</p>
-          <p style={{marginTop: "0px", marginBottom: "0px"}}>Email: sampleeditor@test.com</p>
-          <p style={{marginTop: "0px", marginBottom: "0px"}}>Password: sampleeditor123$</p>
-        </div>
-      </div>
-    </div>
-
       </div>
     </div>
   );

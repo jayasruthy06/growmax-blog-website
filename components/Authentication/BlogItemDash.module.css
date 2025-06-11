@@ -11,6 +11,7 @@
     padding-left: 20px;
     box-sizing: border-box;
     background-color: var(--box-bg-alt);
+    margin-bottom: 20px;
 }
 
 .blogItemDashText {
@@ -98,7 +99,7 @@
     .blogItemDashContainer {
         flex-direction: column;
         align-items: flex-start;
-        width: 90%;
+        width: 100%;
         padding: 10px;
         gap: 15px;
     }
@@ -133,6 +134,7 @@
     .blogItemDashContainer {
         padding: 12px;
         gap: 12px;
+        width: 100%;
     }
     
     .blogItemDashTitle {
@@ -149,6 +151,7 @@
         padding: 10px;
         gap: 10px;
         border-radius: 8px;
+        width:100%;
     }
 
     .blogItemDashTitle {
@@ -176,6 +179,7 @@
     .blogItemDashContainer {
         padding: 8px;
         gap: 8px;
+        width: 100%;
     }
 
     .blogItemDashTitle {

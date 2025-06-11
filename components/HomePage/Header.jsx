@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useMemo } from 'react'
 import "../../styles/Header.css";
 import Image from "next/image";
 import Link from "next/link";
@@ -21,6 +21,24 @@ const Header = () => {
     const solutionsRef = useRef(null);
     const companyRef = useRef(null);
     const router = useRouter();
+
+    const authStatus = useMemo(() => {
+        if (isAuth === 'loading' || fetchLoading) return 'loading';
+        if (isAuth === 'true' && userInfo) return 'authenticated';
+        return 'unauthenticated';
+    }, [isAuth, fetchLoading, userInfo]);
+
+    const profileImage = useMemo(() => {
+        if (authStatus !== 'authenticated') return null;
+        return userInfo.profilephoto || "/images/default-picture.jpg";
+    }, [authStatus, userInfo?.profilephoto]);
+
+    useEffect(() => {
+        if (profileImage && profileImage !== "/images/default-picture.jpg") {
+            const img = new window.Image();
+            img.src = profileImage;
+        }
+    }, [profileImage]);
 
     const handleMenu = () => {
         setActiveDropdown(null);
@@ -117,14 +135,174 @@ const Header = () => {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
+    const renderAuthButton = () => {
+        switch (authStatus) {
+            case 'loading':
+                return (
+                    <div style={{ 
+                        width: '80px', 
+                        height: '40px', 
+                        backgroundColor: '#f0f0f0', 
+                        borderRadius: '6px',
+                        animation: 'pulse 1.5s ease-in-out infinite alternate'
+                    }} />
+                );
+            case 'authenticated':
+                return (
+                    <div className="admin-details-box" style={{ 
+                        display: "flex", 
+                        flexDirection: "row", 
+                        gap: "10px", 
+                        alignItems: "center", 
+                        position: "relative" 
+                    }}>
+                        <Image
+                            src={profileImage}
+                            width={40}
+                            height={40}
+                            alt="Admin Profile Photo"
+                            style={{ 
+                                cursor: "pointer",
+                                borderRadius: "50%",
+                                objectFit: "cover"
+                            }}
+                            priority={true}
+                        />
+                        <button 
+                            onClick={handleLogout}
+                            style={{
+                                fontFamily: "Outfit",
+                                fontSize: "15px",
+                                backgroundColor: "var(--orange-primary)",
+                                color: "white",
+                                padding: "10px",
+                                border: "none",
+                                outline: "none",
+                                borderRadius: "6px",
+                                cursor: "pointer",
+                                boxShadow: "var(--box-shadow)"
+                            }}
+                        >
+                            Logout
+                        </button>
+                    </div>
+                );
+            default:
+                return (
+                    <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+                        <button
+                            style={{
+                                fontFamily: "Outfit",
+                                fontSize: "15px",
+                                backgroundColor: "var(--orange-primary)",
+                                color: "white",
+                                padding: "10px",
+                                border: "none",
+                                outline: "none",
+                                borderRadius: "6px",
+                                cursor: "pointer",
+                                boxShadow: "var(--box-shadow)"
+                            }}
+                            onClick={handleLoginRoute}
+                        >
+                            Log In
+                        </button>
+                    </div>
+                );
+        }
+    };
+
+    const renderMobileAuthButton = () => {
+        switch (authStatus) {
+            case 'loading':
+                return (
+                    <div style={{ 
+                        width: '100px', 
+                        height: '40px', 
+                        backgroundColor: '#f0f0f0', 
+                        borderRadius: '6px',
+                        animation: 'pulse 1.5s ease-in-out infinite alternate'
+                    }} />
+                );
+            case 'authenticated':
+                return (
+                    <div className="admin-details-box" style={{ 
+                        display: "flex", 
+                        flexDirection: "column", 
+                        gap: "5px", 
+                        alignItems: "center" 
+                    }}>
+                        <div style={{display: "flex", flexDirection: "row", gap: "10px", alignItems:"center"}}>
+                            <Image
+                                src={profileImage}
+                                width={40}
+                                height={40}
+                                alt="Admin Profile Photo"
+                                style={{ 
+                                    borderRadius: "50%",
+                                    objectFit: "cover"
+                                }}
+                                priority={true}
+                            />
+                            <p style={{fontSize: "14px", color:"var(--text-gray)"}}>{userInfo.email}</p>
+                        </div>
+                        <button 
+                            onClick={handleLogout}
+                            style={{
+                                fontFamily: "Outfit",
+                                fontSize: "15px",
+                                backgroundColor: "var(--orange-primary)",
+                                color: "white",
+                                padding: "10px",
+                                border: "none",
+                                outline: "none",
+                                borderRadius: "6px",
+                                cursor: "pointer",
+                                boxShadow: "var(--box-shadow)"
+                            }}
+                        >
+                            Logout
+                        </button>
+                    </div>
+                );
+            default:
+                return (
+                    <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+                        <button
+                            style={{
+                                fontFamily: "Outfit",
+                                fontSize: "15px",
+                                backgroundColor: "var(--orange-primary)",
+                                color: "white",
+                                padding: "10px",
+                                border: "none",
+                                outline: "none",
+                                borderRadius: "6px",
+                                cursor: "pointer",
+                                boxShadow: "var(--box-shadow)"
+                            }}
+                            onClick={handleLoginRoute}
+                        >
+                            Log In
+                        </button>
+                    </div>
+                );
+        }
+    };
+
     return (
         <div className="outer-nav-container">
+            <style jsx>{`
+                @keyframes pulse {
+                    0% { opacity: 1; }
+                    100% { opacity: 0.5; }
+                }
+            `}</style>
             <div className="inner-nav-container">
                 <div className="nav-wrap">
                     <div className="brand-logo">
                         <Link href="/"><Image src = "/images/HomePageImg/growmax_logo.png" className="logo-header" width={150} height={50} alt="Growmax Logo in Header"/></Link>
                     </div>
-                    
                     
                     <nav className="nav-bar desktop-nav">
                         <div className="nav-bar-ele-solutions" ref={solutionsRef}>
@@ -198,9 +376,12 @@ const Header = () => {
                         </div>
                         <div className="nav-bar-ele"><Link href="/integrations" onClick={handleMenu}>Integrations</Link></div>
                         <div className="nav-bar-ele"><Link href="/blog" onClick={handleMenu}>Blog</Link></div>
-                        {isAuth === 'loading' || fetchLoading?(<div></div>): isAuth === 'true' && userInfo ? (<div className="nav-bar-ele"><Link href="/verified/dashboard" onClick={handleMenu}>Dashboard</Link></div>) : (<div></div>)}
+                        {authStatus === 'authenticated' && (
+                            <div className="nav-bar-ele">
+                                <Link href="/verified/dashboard" onClick={handleMenu}>Dashboard</Link>
+                            </div>
+                        )}
                     </nav>
-
                     
                     <div className="mobile-menu-toggle" onClick={toggleMobileMenu}>
                         <div className={`hamburger ${mobileMenuOpen ? 'active' : ''}`}>
@@ -211,70 +392,19 @@ const Header = () => {
                     </div>
                 </div>
 
-               
                 <div className="button-container desktop-button" style={{display:"flex", flexDirection:"row", alignItems:"center", justifyContent:"center", gap: "30px"}}>
                     <button className="talk-to-us" onClick={handleButtonMenu}>Talk To Us<PhoneCall /></button>
-                    {isAuth === 'loading' || fetchLoading ? (
-                    <div></div>
-                    ) : isAuth === 'true' && userInfo ? (
-                        <div className="admin-details-box" style={{ display: "flex", flexDirection: "row", gap: "10px", alignItems: "center", position: "relative" }}>
-                        <Image
-                            src={userInfo.profilephoto || "/images/default-picture.jpg"}
-                            width={40}
-                            height={40}
-                            alt="Admin Profile Photo"
-                            style={{ cursor: "pointer" }}
-                        />
-                        <button 
-                            onClick={handleLogout}
-                            style={{
-                                fontFamily: "Outfit",
-                                fontSize: "15px",
-                                backgroundColor: "var(--orange-primary)",
-                                color: "white",
-                                padding: "10px",
-                                border: "none",
-                                outline: "none",
-                                borderRadius: "6px",
-                                cursor: "pointer",
-                                boxShadow: "var(--box-shadow)"
-                            }}
-                        >
-                            Logout
-                        </button>
-                        </div>
-                    ) : (
-                        <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
-                        <button
-                            style={{
-                                fontFamily: "Outfit",
-                                fontSize: "15px",
-                                backgroundColor: "var(--orange-primary)",
-                                color: "white",
-                                padding: "10px",
-                                border: "none",
-                                outline: "none",
-                                borderRadius: "6px",
-                                cursor: "pointer",
-                                boxShadow: "var(--box-shadow)"
-                        }}
-                        onClick={handleLoginRoute}
-                        >
-                        Log In
-                        </button>
-                        </div>
-                        )}
-                    </div>
+                    {renderAuthButton()}
+                </div>
+
                 <div className={`mobile-nav ${mobileMenuOpen ? 'mobile-nav-open' : ''}`}>
                     <div className="mobile-nav-content">
-                       
                         <div className="mobile-nav-item">
                             <div className="mobile-nav-header" onClick={() => toggleMobileDropdown('solutions')}>
                                 <span>Solutions</span>
                                 <ChevronDown className={`mobile-dropdown-arrow ${mobileActiveDropdown.solutions ? 'rotated' : ''}`}/>
                             </div>
                             <div className={`mobile-dropdown ${mobileActiveDropdown.solutions ? 'mobile-dropdown-open' : ''}`}>
-                               
                                 <div className="mobile-nav-subitem">
                                     <div className="mobile-nav-subheader" onClick={() => toggleMobileDropdown('platform')}>
                                         <span>Platform</span>
@@ -282,12 +412,10 @@ const Header = () => {
                                     </div>
                                     <div className={`mobile-dropdown ${mobileActiveDropdown.platform ? 'mobile-dropdown-open' : ''}`}>
                                         <Link href="/sales-rep-app" onClick={handleMenu}>
-                                            <div className="mobile-nav-link">Sales Representative & Self-Service App for Wholesalers and Distributors
-                                            </div>
+                                            <div className="mobile-nav-link">Sales Representative & Self-Service App for Wholesalers and Distributors</div>
                                         </Link>
                                         <Link href="/b2b-commerce-cloud" onClick={handleMenu}>
-                                            <div className="mobile-nav-link">Enterprise Commerce Cloud for Large Organizations
-                                            </div>
+                                            <div className="mobile-nav-link">Enterprise Commerce Cloud for Large Organizations</div>
                                         </Link>
                                     </div>
                                 </div>
@@ -299,11 +427,9 @@ const Header = () => {
                                     </div>
                                     <div className={`mobile-dropdown ${mobileActiveDropdown.features ? 'mobile-dropdown-open' : ''}`}>
                                         <Link href="/quote-management" onClick={handleMenu}><div className="mobile-nav-link">Quotation Management</div></Link>
-                                        <Link href="/order-management" onClick={handleMenu}><div className="mobile-nav-link">Order Management
-                                            </div></Link>
+                                        <Link href="/order-management" onClick={handleMenu}><div className="mobile-nav-link">Order Management</div></Link>
                                         <Link href="/sales-rep-app" onClick={handleMenu}><div className="mobile-nav-link">Sales Representative Application</div></Link>
-                                        <Link href="/product-catalog-management" onClick={handleMenu}><div className="mobile-nav-link">Product Catalog Management</div>
-                                        </Link>
+                                        <Link href="/product-catalog-management" onClick={handleMenu}><div className="mobile-nav-link">Product Catalog Management</div></Link>
                                         <Link href="/storefront-management" onClick={handleMenu}><div className="mobile-nav-link">Storefront Management</div></Link>
                                         <Link href="/internal-collaboration" onClick={handleMenu}><div className="mobile-nav-link">Internal Collaboration</div></Link>
                                         <Link href="/customer-support" onClick={handleMenu}><div className="mobile-nav-link">E-Commerce Customer Support</div></Link>
@@ -312,7 +438,6 @@ const Header = () => {
                             </div>
                         </div>
 
-                        
                         <div className="mobile-nav-item">
                             <div className="mobile-nav-header" onClick={() => toggleMobileDropdown('company')}>
                                 <span>Company</span>
@@ -324,7 +449,6 @@ const Header = () => {
                             </div>
                         </div>
 
-                        
                         <div className="mobile-nav-item">
                             <Link href="/integrations" onClick={handleMenu}>
                             <div className="mobile-nav-header">
@@ -339,62 +463,16 @@ const Header = () => {
                             </div>
                             </Link>
                         </div>
-                        {isAuth === 'loading' || fetchLoading?(<div></div>): isAuth === 'true' && userInfo ? (
-                            <div className="mobile-nav-item"><Link href="/verified/dashboard" onClick={handleMenu}><div className="mobile-nav-header">Dashboard</div></Link></div>) : (<div></div>)}
+                        {authStatus === 'authenticated' && (
+                            <div className="mobile-nav-item">
+                                <Link href="/verified/dashboard" onClick={handleMenu}>
+                                    <div className="mobile-nav-header">Dashboard</div>
+                                </Link>
+                            </div>
+                        )}
                         <div className="mobile-nav-item" style={{display:"flex", flexDirection:"column", gap:"15px", alignItems: "center", justifyContent: "center", padding: "15px 0"}}>
                             <button className="mobile-talk-to-us" onClick={handleButtonMenu}>Talk To Us<PhoneCall /></button>
-                            {isAuth === 'loading' || fetchLoading ? (
-                    <div></div>
-                    ) : isAuth === 'true' && userInfo ? (
-                        <div className="admin-details-box" style={{ display: "flex", flexDirection: "column", gap: "5px", alignItems: "center" }}>
-                        <div style={{display: "flex", flexDirection: "row", gap: "10px", alignItems:"center"}}>
-                        <Image
-                            src={userInfo.profilephoto || "/images/default-picture.jpg"}
-                            width={40}
-                            height={40}
-                            alt="Admin Profile Photo"
-                        />
-                        <p style={{fontSize: "14px", color:"var(--text-gray)"}}>{userInfo.email}</p>
-                        </div>
-                        <button 
-                            onClick={handleLogout}
-                            style={{
-                                fontFamily: "Outfit",
-                                fontSize: "15px",
-                                backgroundColor: "var(--orange-primary)",
-                                color: "white",
-                                padding: "10px",
-                                border: "none",
-                                outline: "none",
-                                borderRadius: "6px",
-                                cursor: "pointer",
-                                boxShadow: "var(--box-shadow)"
-                            }}
-                        >
-                            Logout
-                        </button>
-                        </div>
-                    ) : (
-                        <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
-                        <button
-                            style={{
-                                fontFamily: "Outfit",
-                                fontSize: "15px",
-                                backgroundColor: "var(--orange-primary)",
-                                color: "white",
-                                padding: "10px",
-                                border: "none",
-                                outline: "none",
-                                borderRadius: "6px",
-                                cursor: "pointer",
-                                boxShadow: "var(--box-shadow)"
-                        }}
-                        onClick={handleLoginRoute}
-                        >
-                        Log In
-                        </button>
-                        </div>
-                        )}
+                            {renderMobileAuthButton()}
                         </div>
                     </div>
                 </div>

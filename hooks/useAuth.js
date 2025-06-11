@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 
 export const useAuth = () => {
@@ -8,6 +8,10 @@ export const useAuth = () => {
   const [fetchLoading, setFetchLoading] = useState(false);
   const [isAuth, setIsAuth] = useState('loading');
   const router = useRouter();
+  
+  const fetchingRef = useRef(false);
+  const cacheRef = useRef({ user: null, userInfo: null, timestamp: 0 });
+  const CACHE_DURATION = 30 * 1000; 
 
   const refreshToken = useCallback(async () => {
     try {
@@ -15,11 +19,11 @@ export const useAuth = () => {
         method: 'POST',
         credentials: 'include'
       });
-      
+
       if (!response.ok) {
         throw new Error('Token refresh failed');
       }
-      
+
       const data = await response.json();
       return data.success;
     } catch (error) {
@@ -34,58 +38,77 @@ export const useAuth = () => {
         credentials: 'include'
       });
     } catch (error) {
-      alert('Error in logging out');
+      console.error('Error in logging out:', error);
     } finally {
       setUser(null);
       setUserInfo(null);
       setIsAuth('false');
+      cacheRef.current = { user: null, userInfo: null, timestamp: 0 };
       router.push('/login');
     }
   }, [router]);
 
-  const fetchUserData = useCallback(async () => {
+  const fetchUserData = useCallback(async (useCache = true) => {
+    if (fetchingRef.current) return;
+    
+    const now = Date.now();
+    if (useCache && cacheRef.current.timestamp > 0 && 
+        (now - cacheRef.current.timestamp) < CACHE_DURATION) {
+      setUser(cacheRef.current.user);
+      setUserInfo(cacheRef.current.userInfo);
+      setIsAuth(cacheRef.current.user ? 'true' : 'false');
+      setLoading(false);
+      return;
+    }
+
+    fetchingRef.current = true;
     setFetchLoading(true);
+    
     try {
-      const authResponse = await fetch('/api/auth/me', {
+      const response = await fetch('/api/auth/profile', {
         method: 'GET',
         headers: {
           'Cache-Control': 'no-cache'
         },
+        credentials: 'include'
       });
-      
-      if (!authResponse.ok) {
+
+      if (!response.ok) {
         setIsAuth('false');
         setUser(null);
         setUserInfo(null);
+        cacheRef.current = { user: null, userInfo: null, timestamp: now };
         return;
       }
 
-      const authData = await authResponse.json();
-      const userEmail = authData.user.email;
-      setUser(authData);
-      setIsAuth('true');
-      
-      const timestamp = new Date().getTime();
-      const response = await fetch(`/api/users?email=${encodeURIComponent(userEmail)}&t=${timestamp}`, {
-        method: 'GET',
-        headers: {
-          'Cache-Control': 'no-cache',
-        },
-      });
-      
       const data = await response.json();
       
-      if (data.success) {
-        setUserInfo(data.user);
-      } 
+      if (data.success && data.user && data.userInfo) {
+        setUser(data);
+        setUserInfo(data.userInfo);
+        setIsAuth('true');
+        
+        cacheRef.current = {
+          user: data,
+          userInfo: data.userInfo,
+          timestamp: now
+        };
+      } else {
+        setIsAuth('false');
+        setUser(null);
+        setUserInfo(null);
+        cacheRef.current = { user: null, userInfo: null, timestamp: now };
+      }
     } catch (error) {
       console.error('❌ Error fetching user:', error);
       setIsAuth('false');
       setUser(null);
       setUserInfo(null);
+      cacheRef.current = { user: null, userInfo: null, timestamp: now };
     } finally {
       setFetchLoading(false);
       setLoading(false);
+      fetchingRef.current = false;
     }
   }, []);
 
@@ -101,11 +124,10 @@ export const useAuth = () => {
       if (!success) {
         logout();
       }
-    }, 10 * 60 * 1000); //alter token refresh duration
+    }, 10 * 60 * 1000);
 
     return () => clearInterval(interval);
   }, [user, refreshToken, logout]);
-
 
   return { 
     user, 
@@ -115,6 +137,6 @@ export const useAuth = () => {
     isAuth,
     logout, 
     refreshToken,
-    refetchUserData: fetchUserData
+    refetchUserData: () => fetchUserData(false) 
   };
 };

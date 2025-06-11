@@ -23,7 +23,6 @@
 @media screen and (max-width: 950px) {
     .displayBlogDashContainer {
         margin-right: 0;
-        width: 100%;
         padding: 10px;
         gap: 15px;
     }
@@ -33,7 +32,9 @@
     .displayBlogDashContainer {
         padding: 8px;
         gap: 8px;
-        height: calc(100vh - 16px); 
+        height: 100%;
+        align-items: center;
+        justify-content: center;
     }
 }
 
