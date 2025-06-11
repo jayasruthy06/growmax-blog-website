@@ -19,7 +19,7 @@ const FourSlider = () => {
         author: "Aravindan Varatharajan",
         authorpic:"/images/Admin/aravindan.jpg",
         date: "June 23, 2024",
-        slug: "/ai-powered-ordering-apps-the-future-of-b2b-sales"
+        slug: "/blog/ai-powered-ordering-apps-the-future-of-b2b-sales"
       },
       {
         id: 2,
@@ -30,7 +30,7 @@ const FourSlider = () => {
         author: "Sudhakar Varatharajan",
         authorpic: "/images/Admin/sudhakar.jpg",
         date: "December 10, 2021",
-        slug: "/everything-you-need-to-know-about-b2b-ecommerce"
+        slug: "/blog/everything-you-need-to-know-about-b2b-ecommerce"
       },
       {
         id: 3,
@@ -41,7 +41,7 @@ const FourSlider = () => {
         author: "Sudhakar Varatharajan",
         authorpic: "/images/Admin/sudhakar.jpg",
         date: "December 23, 2021",
-        slug: "/make-2x-faster-decisions-in-your-sales-cycle"
+        slug: "/blog/make-2x-faster-decisions-in-your-sales-cycle"
       },
       {
         id: 4,
@@ -52,7 +52,7 @@ const FourSlider = () => {
         author: "Aravindan Varatharajan",
         authorpic:"/images/Admin/sudhakar.jpg",
         date: "September 22, 2021",
-        slug: "/digital-can-drive-5x-growth-for-b2b-companies"
+        slug: "/blog/digital-can-drive-5x-growth-for-b2b-companies"
       },
       {
         id: 5,
@@ -63,7 +63,7 @@ const FourSlider = () => {
         author: "Gnanavel Sivasami",
         authorpic: "/images/Admin/Gnanavel.png",
         date: "December 23, 2021",
-        slug: "/your-traditional-competitors-are-not-your-threats"
+        slug: "/blog/your-traditional-competitors-are-not-your-threats"
       }
     ];
   

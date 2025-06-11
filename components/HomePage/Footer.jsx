@@ -94,12 +94,12 @@ const Footer = () => {
         <div className="guides-footer">
             <p className="footer-heading">GUIDES</p>
             <ul>
-                <li>What is B2B E-Commerce?</li>
-                <li>How to Increase B2B Sales?</li>
-                <li>What Is D2C?</li>
-                <li>What is O2C?</li>
-                <li>How To Setup B2B E-Commerce?</li>
-                <li>Empower Your Sales Representatives </li>
+                <li><Link href="/blog/everything-you-need-to-know-about-b2b-ecommerce">What is B2B E-Commerce?</Link></li>
+                <li><Link href="/blog/increase-b2b-sales">How to Increase B2B Sales?</Link></li>
+                <li><Link href="/blog/what-is-d2c">What Is D2C?</Link></li>
+                <li><Link href="/blog/what-is-order-to-cash-o2c">What is O2C?</Link></li>
+                <li><Link href="/blog/set-up-b2b-ecommerce-website">How To Setup B2B E-Commerce?</Link></li>
+                <li><Link href="/blog/empower-sales-rep-with-digital-commerce">Empower Your Sales Representatives</Link></li>
             </ul>
         </div>
         </div>
