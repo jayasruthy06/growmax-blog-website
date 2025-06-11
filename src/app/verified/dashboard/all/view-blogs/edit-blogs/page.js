@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import EditBlogForm from '../../../../../../components/Blog/EditBlogForm';
+import EditBlogForm from '../../../../../../../components/Blog/EditBlogForm';
 
 export const metadata = {
   title: "Edit Blogs",

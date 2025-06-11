@@ -1,5 +1,5 @@
 import React from 'react'
-import DisplayBlogDash from '../../../../../components/Authentication/DisplayBlogDash'
+import DisplayBlogDash from '../../../../../../components/Authentication/DisplayBlogDash'
 
 export const metadata = {
   title:"View All Blogs",

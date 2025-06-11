@@ -13,6 +13,9 @@ const nextConfig = {
   experimental:{
     cssChunking: false,
   },
+  env: {
+    JWT_SECRET: process.env.JWT_SECRET, 
+  },
 }
 
 export default nextConfig;

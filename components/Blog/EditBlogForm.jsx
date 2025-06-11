@@ -6,6 +6,7 @@ import styles from "./CreateBlog.module.css";
 import dynamic from "next/dynamic";
 import "quill/dist/quill.snow.css";
 import Notification from "../Authentication/Notification";
+import { sanitizeHTMLFrontend, sanitizeText, sanitizeSlug } from "../../lib/sanitizeClient";
 
 const ReactQuill = dynamic(() => import("react-quill-new"), {
   ssr: false,
@@ -75,7 +76,7 @@ const EditBlogForm = () => {
     if (blogId) {
       fetchBlogData();
     } else {
-      router.push('/admin/dashboard/view-blogs');
+      router.push('/verified/dashboard/all/view-blogs');
     }
   }, [blogId]);
 
@@ -98,12 +99,13 @@ const EditBlogForm = () => {
         setContent(blog.content || "");
         setExistingCoverImage(blog.coverimg || "");
       } else {
+        console.log(result.status)
         showNotification('error', 'Failed to fetch blog data');
-        router.push('/admin/dashboard/view-blogs');
+        router.push('/verified/dashboard/all/view-blogs');
       }
     } catch (error) {
       showNotification('error', 'Network error occurred while fetching blog data');
-      router.push('/admin/dashboard/view-blogs');
+      router.push('/verified/dashboard/all/view-blogs');
     } finally {
       setIsLoading(false);
     }
@@ -188,12 +190,12 @@ const EditBlogForm = () => {
       
       formDataToSend.append("id", blogId);
       
-      formDataToSend.append("title", formData.title);
-      formDataToSend.append("description", formData.description);
-      formDataToSend.append("authorname", formData.authorname);
-      formDataToSend.append("category", formData.category);
-      formDataToSend.append("content", content);
-      formDataToSend.append("slug", formData.slug);
+      formDataToSend.append("title", sanitizeText(formData.title));
+      formDataToSend.append("description", sanitizeText(formData.description));
+      formDataToSend.append("authorname", sanitizeText(formData.authorname));
+      formDataToSend.append("category", sanitizeText(formData.category));
+      formDataToSend.append("content", sanitizeHTMLFrontend(content));
+      formDataToSend.append("slug", sanitizeSlug(formData.slug));
       formDataToSend.append("date", formData.date);
       
       const coverImageFile = form.querySelector('input[type="file"]').files[0];

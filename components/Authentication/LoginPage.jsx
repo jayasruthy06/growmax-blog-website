@@ -41,7 +41,7 @@ const LoginPage = () => {
   };
 
   useEffect(()=>{
-    const isLoggedIn = document.cookie.includes('auth_token=');
+    const isLoggedIn = document.cookie.includes('token=');
     if(isLoggedIn){
       setAlreadyLoggedIn(true);
     }
@@ -67,7 +67,8 @@ const LoginPage = () => {
 
   try {
     setLoggingIn(true);
-    const res = await fetch(`/api/auth/login `, {
+    console.log(JSON.stringify({email, password}))
+    const res = await fetch(`/api/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
@@ -89,11 +90,14 @@ const LoginPage = () => {
   } catch (err) {
     showNotification("error", "Network error!");
   }
+  finally{
+    setLoggingIn(false);
+  }
 };
 
 
 useEffect(() => {
-  if (document.cookie.includes('auth_token=')) {
+  if (document.cookie.includes('token=')) {
     window.location.href = "/";
   }
 }, []);
@@ -136,12 +140,30 @@ useEffect(() => {
                 {showPassword ? <Eye/> : <EyeOff/>}
               </span>
             </div>
+            <p style={{fontSize: "15px", color: "var(--red-dark)", fontWeight: "bold", fontFamily: "Outfit", textDecoration:"underline", textAlign:"center", cursor: "pointer"}} onClick={()=>router.push("/forgot-password")}>Forgot Password?</p>
           </div>
         </div>
 
         <div className={styles.loginButton}>
           <button onClick={handleSubmit}>{loggingIn? "LOGGING IN...": "LOG IN"}</button>
         </div>
+
+        <div style={{fontFamily: "Outfit", fontSize: "12px", marginTop: "10px"}}>
+        <p style={{fontWeight: "bold"}}>Demo Accounts:</p>
+      <div style={{display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
+        <div style={{display: "flex", flexDirection: "column", alignItems: "center", gap: "0px", backgroundColor: "var(--box-bg-light)", padding: "10px", boxShadow:"var(--box-shadow)"}}>
+          <p style={{marginTop: "0px", marginBottom: "0px", fontWeight: "bold"}}>Admin User:</p>
+          <p style={{marginTop: "0px", marginBottom: "0px"}}>Email: sampleadmin@test.com</p>
+          <p style={{marginTop: "0px", marginBottom: "0px"}}>Password: sampleadmin123$</p>
+        </div>
+        <div style={{display: "flex", flexDirection: "column", alignItems: "center", backgroundColor: "var(--box-bg-light)", padding: "10px", boxShadow:"var(--box-shadow)", gap: "0px"}}>
+          <p style={{marginTop: "0px", marginBottom: "0px", fontWeight: "bold"}}>Editor User:</p>
+          <p style={{marginTop: "0px", marginBottom: "0px"}}>Email: sampleeditor@test.com</p>
+          <p style={{marginTop: "0px", marginBottom: "0px"}}>Password: sampleeditor123$</p>
+        </div>
+      </div>
+    </div>
+
       </div>
     </div>
   );

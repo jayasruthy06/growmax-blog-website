@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Notification from '../Authentication/Notification';
 import styles from "./CreateBlog.module.css";
 import Image from "next/image";
+import { sanitizeHTML, sanitizeText } from "../../lib/sanitizeClient";
 
 const UserProfile = () => {
   const [loading, setLoading] = useState(false);
@@ -18,6 +19,7 @@ const UserProfile = () => {
     name: '',
     email: '',
     mobileno: '',
+    role: '',
     currentPassword: '',
     newPassword: ''
   });
@@ -64,13 +66,13 @@ const UserProfile = () => {
       }
       
       const authData = await authResponse.json();
-      const userEmail = authData.email;
+      const userEmail = authData.user.email;
 
       const timestamp = new Date().getTime();
       const response = await fetch(`/api/users?email=${encodeURIComponent(userEmail)}&t=${timestamp}`, {
         method: 'GET',
         headers: {
-          'Cache-Control': 'no-cache',
+          'Cache-Control': 'no-cache'
         },
       });
       
@@ -82,6 +84,7 @@ const UserProfile = () => {
           name: data.user.name,
           email: data.user.email,
           mobileno: data.user.mobileno,
+          role: data.user.role,
           currentPassword: '',
           newPassword: ''
         });
@@ -110,10 +113,10 @@ const UserProfile = () => {
       
       const formDataToSend = new FormData();
       formDataToSend.append('userId', user._id);
-      formDataToSend.append('name', formData.name);
-      formDataToSend.append('email', formData.email);
-      formDataToSend.append('mobileno', formData.mobileno);
-      
+      formDataToSend.append('name', sanitizeText(formData.name));
+      formDataToSend.append('email', sanitizeText(formData.email));
+      formDataToSend.append('mobileno', sanitizeText(formData.mobileno));
+      formDataToSend.append('role', sanitizeText(formData.role.toLowerCase()));
       if (formData.newPassword) {
         if (!formData.currentPassword) {
           showNotification('error', 'Current password is required to change password');
@@ -142,6 +145,7 @@ const UserProfile = () => {
           name: data.user.name,
           email: data.user.email,
           mobileno: data.user.mobileno,
+          role: data.user.role,
           currentPassword: '',
           newPassword: ''
         }));
@@ -438,7 +442,23 @@ const UserProfile = () => {
               className={styles.createblogInput}
             />
             <br/>
-            
+            <label className={styles.createblogLabel}>Role:</label>
+            <br/>
+            <input
+              list="userrole"
+              id="users"
+              name="role"
+              value={(formData.role).toUpperCase()}
+              onChange={handleInputChange}
+              required
+              className={styles.createblogInput}
+            />
+            <br/>
+            <datalist id="userrole">
+              <option value="Editor"></option>
+              <option value="Admin"></option>
+            </datalist>
+            <br/>
             <label className={styles.createblogLabel}>Phone Number:</label>
             <br/>
             <input 

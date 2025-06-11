@@ -1,5 +1,5 @@
 import React from 'react'
-import UserProfile from '../../../../../components/Blog/UserProfile'
+import UserProfile from '../../../../../../components/Blog/UserProfile'
 
 export const metadata = {
   title: "User Profile",

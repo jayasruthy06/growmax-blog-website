@@ -1,45 +1,60 @@
 import { NextResponse } from 'next/server';
-import { ConnectDB } from "../../../../../lib/config/db";
-import User from '../../../../../lib/models/Users';
-import jwt from 'jsonwebtoken';
+import { authenticateUser } from '../../../../../lib/auth';
+
+// Input sanitization helper
+function sanitizeInput(input) {
+  if (typeof input !== 'string') return input;
+  return input
+    .replace(/[<>\"']/g, '') 
+    .trim()
+    .slice(0, 255); 
+}
 
 export async function POST(req) {
+  const allowedOrigins = [
+    'http://localhost:3000',
+    'https://growmaxio.netlify.app',
+  ];
+
+  const origin = req.headers.get('origin');
+  if (!allowedOrigins.includes(origin)) {
+    return NextResponse.json(
+      { error: 'Unauthorized origin' },
+      {
+        status: 403,
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
+  }
+
   try {
-    await ConnectDB();
+    const body = await req.json(); 
+    let { email, password } = body;
 
-    const cookieHeader = req.headers.get('cookie') || '';
-    const alreadyLoggedIn = cookieHeader.includes('auth_token=');
+    email = sanitizeInput(email);
+    password = sanitizeInput(password);
 
-    if (alreadyLoggedIn) {
-      return NextResponse.json({ error: 'User already logged in' }, { status: 403 });
-    }
+    const { token, user } = await authenticateUser(email, password);
 
-    const { email, password } = await req.json();
-    const user = await User.findOne({ email });
-
-    if (!user || !(await user.isPasswordValid(password))) {
-      return NextResponse.json({ error: 'Invalid email or password' }, { status: 401 });
-    }
-
-    const token = jwt.sign(
-      { userId: user._id, email: user.email },
-      process.env.JWT_SECRET,
-      { expiresIn: '7d' }
+    const response = NextResponse.json(
+      { success: true, user },
+      { status: 200 }
     );
 
-    
-    const response = NextResponse.json({ message: 'Logged in' });
+    response.headers.set(
+      'Set-Cookie',
+      `auth_token=${token}; HttpOnly; Path=/; Max-Age=${5 * 60 * 1000}; SameSite=Strict`
+    ); //testing set max-age to 7 days
 
-    response.cookies.set('auth_token', token, {
-      httpOnly: true,
-      maxAge: 60 * 60 * 24 * 7, 
-      path: '/',
-      sameSite: 'Strict',
-      secure: process.env.NODE_ENV === 'production',
-    });
+    response.headers.set('X-Content-Type-Options', 'nosniff');
+    response.headers.set('X-Frame-Options', 'DENY');
+    response.headers.set('X-XSS-Protection', '1; mode=block');
 
     return response;
-  } catch (err) {
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  } catch (error) {
+    return NextResponse.json(
+      { error: 'Authentication failed' },
+      { status: 401 }
+    );
   }
 }

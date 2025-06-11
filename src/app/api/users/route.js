@@ -3,6 +3,7 @@ import { ConnectDB } from "../../../../lib/config/db";
 import User from "../../../../lib/models/Users";
 import ImageKit from "imagekit";
 import bcrypt from "bcryptjs";
+import { sanitizeText } from "../../../../lib/sanitizeClient";
 
 const imagekit = new ImageKit({
   publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
@@ -76,20 +77,34 @@ async function deleteProfilePhoto(imageUrl) {
 
 
 export async function POST(request) {
+  const allowedOrigins = [
+    'http://localhost:3000',
+    'https://growmaxio.netlify.app',
+  ];
+
+  const origin = request.headers.get('origin');
+
+  if (origin && !allowedOrigins.includes(origin)) {
+    return new Response(
+      JSON.stringify({ error: 'Unauthorized origin' }),
+      { status: 403, headers: { 'Content-Type': 'application/json' } }
+    );
+  }
   try {
     await ConnectDB();
     
     const formData = await request.formData();
     
-    const name = formData.get("name");
-    const email = formData.get("email");
-    const password = formData.get("password");
-    const mobileno = formData.get("mobileno");
+    const name = sanitizeText(formData.get("name"));
+    const email = sanitizeText(formData.get("email"));
+    const password = sanitizeText(formData.get("password"));
+    const mobileno = sanitizeText(formData.get("mobileno"));
     const profilephoto = formData.get("profilephoto");
-    
-    if (!name || !email || !password || !mobileno) {
+    const role = sanitizeText(formData.get("role"));
+
+    if (!name || !email || !password || !mobileno || !role) {
       return NextResponse.json(
-        { success: false, message: "Name, email, password, and mobile number are required" },
+        { success: false, message: "Name, email, password, role, and mobile number are required" },
         { status: 400 }
       );
     }
@@ -115,14 +130,12 @@ export async function POST(request) {
       }
     }
 
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-    
     const userData = {
       name: name.trim(),
       email: email.toLowerCase().trim(),
-      passwordHash: hashedPassword, 
+      password: password, 
       mobileno: mobileno.trim(),
+      role: role.toLowerCase(),
       profilephoto: profilePhotoUrl
     };
 
@@ -135,6 +148,7 @@ export async function POST(request) {
       name: user.name,
       email: user.email,
       mobileno: user.mobileno,
+      role: user.role,
       profilephoto: user.profilephoto,
       createdAt: user.createdAt
     };
@@ -177,6 +191,19 @@ export async function POST(request) {
 }
 
 export async function GET(request) {
+  const allowedOrigins = [
+    'http://localhost:3000',
+    'https://growmaxio.netlify.app',
+  ];
+
+  const origin = request.headers.get('origin');
+
+  if (origin && !allowedOrigins.includes(origin)) {
+    return new Response(
+      JSON.stringify({ error: 'Unauthorized origin' }),
+      { status: 403, headers: { 'Content-Type': 'application/json' } }
+    );
+  }
   await ConnectDB();
   try {
     const { searchParams } = new URL(request.url);
@@ -184,10 +211,8 @@ export async function GET(request) {
     const name = searchParams.get('name');
     
     if (email) {
-      console.log('📧 Fetching user by email:', email);
-      
       const user = await User.findOne({ 
-        email: email.toLowerCase().trim() 
+        email: sanitizeText(email.toLowerCase().trim()) 
       }).lean(); 
       
       if (!user) {
@@ -199,9 +224,10 @@ export async function GET(request) {
       
       const responseUser = {
         _id: user._id,
-        name: user.name,
+        name: sanitizeText(user.name),
         email: user.email,
         mobileno: user.mobileno,
+        role: user.role,
         profilephoto: user.profilephoto,
         createdAt: user.createdAt
       };
@@ -241,7 +267,7 @@ export async function GET(request) {
         { isActive: true }
       ]
     })
-      .select('-passwordHash -password') 
+      .select('-password') 
       .sort({ createdAt: -1 })
       .lean(); 
       
@@ -259,17 +285,31 @@ export async function GET(request) {
 }
 
 export async function PUT(request) {
+  const allowedOrigins = [
+    'http://localhost:3000',
+    'https://growmaxio.netlify.app',
+  ];
+
+  const origin = request.headers.get('origin');
+
+  if (origin && !allowedOrigins.includes(origin)) {
+    return new Response(
+      JSON.stringify({ error: 'Unauthorized origin' }),
+      { status: 403, headers: { 'Content-Type': 'application/json' } }
+    );
+  }
   await ConnectDB();
   try {
     const formData = await request.formData();
     
     const userId = formData.get("userId");
-    const name = formData.get("name");
-    const email = formData.get("email");
-    const mobileno = formData.get("mobileno");
+    const name = sanitizeText(formData.get("name"));
+    const email = sanitizeText(formData.get("email"));
+    const mobileno = sanitizeText(formData.get("mobileno"));
+    const role = sanitizeText(formData.get("role"));
     const profilephoto = formData.get("profilephoto");
-    const currentPassword = formData.get("currentPassword");
-    const newPassword = formData.get("newPassword");
+    const currentPassword = sanitizeText(formData.get("currentPassword"));
+    const newPassword = sanitizeText(formData.get("newPassword"));
     
     if (!userId) {
       return NextResponse.json(
@@ -291,6 +331,7 @@ export async function PUT(request) {
     if (name) updateData.name = name.trim();
     if (email) updateData.email = email.toLowerCase().trim();
     if (mobileno) updateData.mobileno = mobileno.trim();
+    if (role) updateData.role = role;
 
     if (newPassword) {
       if (!currentPassword) {
@@ -309,7 +350,7 @@ export async function PUT(request) {
       }
       
       const salt = await bcrypt.genSalt(10);
-      updateData.passwordHash = await bcrypt.hash(newPassword, salt);
+      updateData.password = await bcrypt.hash(newPassword, salt);
     }
 
     if (profilephoto !== null) {
@@ -354,6 +395,7 @@ export async function PUT(request) {
       name: updatedUser.name,
       email: updatedUser.email,
       mobileno: updatedUser.mobileno,
+      role: updatedUser.role,
       profilephoto: updatedUser.profilephoto,
       createdAt: updatedUser.createdAt,
       updatedAt: updatedUser.updatedAt
@@ -388,6 +430,19 @@ export async function PUT(request) {
 
 
 export async function DELETE(request) {
+  const allowedOrigins = [
+    'http://localhost:3000',
+    'https://growmaxio.netlify.app',
+  ];
+
+  const origin = request.headers.get('origin');
+
+  if (origin && !allowedOrigins.includes(origin)) {
+    return new Response(
+      JSON.stringify({ error: 'Unauthorized origin' }),
+      { status: 403, headers: { 'Content-Type': 'application/json' } }
+    );
+  }
   await ConnectDB();
   try {
     const { searchParams } = new URL(request.url);

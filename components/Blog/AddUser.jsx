@@ -3,6 +3,7 @@
 import {React, useState} from 'react'
 import Notification from '../Authentication/Notification'
 import styles from "./CreateBlog.module.css";
+import { sanitizeHTML, sanitizeText } from "../../lib/sanitizeClient";
 
 const AddUser = () => {
     const [formData, setFormData] = useState({
@@ -10,6 +11,7 @@ const AddUser = () => {
         email:'',
         password:'',
         mobileno:'',
+        role: '',
         profilephoto: null
     });
     const [loading, setLoading] = useState(false);
@@ -82,7 +84,7 @@ const AddUser = () => {
           showNotification('error', 'Mobile number is required');
           return false;
       }
-      const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/;
+      const specialCharRegex = /[!@#$%^&*(),.?:{}|]/;
       if(!specialCharRegex.test(password)){
           showNotification('error', 'Password must contain atleast 1 special character');
           return false;
@@ -98,14 +100,16 @@ const AddUser = () => {
       setLoading(true);
       try{
           const formDataToSend = new FormData();
-          formDataToSend.append('name', formData.name.trim());
-          formDataToSend.append('email', formData.email.trim().toLowerCase());
-          formDataToSend.append('password', formData.password);
-          formDataToSend.append('mobileno', formData.mobileno.trim());
+          formDataToSend.append('name', sanitizeText(formData.name.trim()));
+          formDataToSend.append('email', sanitizeText(formData.email.trim().toLowerCase()));
+          formDataToSend.append('password', sanitizeText(formData.password));
+          formDataToSend.append('mobileno', sanitizeText(formData.mobileno.trim()));
+          formDataToSend.append('role', sanitizeText(formData.role.toLowerCase()))
           
           if (formData.profilephoto) {
             formDataToSend.append('profilephoto', formData.profilephoto);
           }
+          const plainObj = Object.fromEntries(formDataToSend.entries());
           
           const response = await fetch('/api/users', {
             method: 'POST',
@@ -121,6 +125,7 @@ const AddUser = () => {
               email: '',
               password: '',
               mobileno: '',
+              role: '',
               profilephoto: null
             });
             const fileInput = document.querySelector('input[type="file"]');
@@ -130,6 +135,7 @@ const AddUser = () => {
           }
       }
       catch (error) {
+        console.log(error.message);
         showNotification('error', 'Unable to create user');
       } finally {
         setLoading(false);
@@ -195,7 +201,24 @@ const AddUser = () => {
               className={styles.createblogInput}
             />
             <br/>
-            <label className={styles.createblogLabel}>Phone Number:</label>
+            <label className={styles.createblogLabel}>Role:</label>
+            <br/>
+            <input
+              list="userrole"
+              id="users"
+              name="role"
+              value={formData.role}
+              onChange={handleInputChange}
+              required
+              className={styles.createblogInput}
+            />
+            <br/>
+            <datalist id="userrole">
+              <option value="Editor"></option>
+              <option value="Admin"></option>
+            </datalist>
+            <br/>
+            <label className={styles.createblogLabel}>Phone Number:&nbsp;<span style={{color: "grey", fontWeight: "normal"}}>(Enter with country prefix and a space - Ex: +91&nbsp;1234567891)</span></label>
             <br/>
             <input 
               type="tel" 

@@ -6,6 +6,7 @@ import Image from "next/image";
 import dynamic from "next/dynamic";
 import "quill/dist/quill.snow.css";
 import Notification from "../../components/Authentication/Notification"
+import { sanitizeHTMLFrontend, sanitizeText, sanitizeSlug } from "../../lib/sanitizeClient";
 
 const ReactQuill = dynamic(() => import("react-quill-new"), {
   ssr: false,
@@ -143,12 +144,12 @@ const BlogForm = () => {
       
       const selectedAuthor = authors.find(author => author.name === formData.authorname);
       
-      formDataToSend.append("title", formData.title);
-      formDataToSend.append("description", formData.description);
-      formDataToSend.append("authorname", formData.authorname);
-      formDataToSend.append("category", formData.category);
-      formDataToSend.append("content", content);
-      formDataToSend.append("slug", formData.slug);
+      formDataToSend.append("title", sanitizeText(formData.title));
+      formDataToSend.append("description", sanitizeText(formData.description));
+      formDataToSend.append("authorname", sanitizeText(formData.authorname));
+      formDataToSend.append("category", sanitizeText(formData.category));
+      formDataToSend.append("content", sanitizeHTMLFrontend(content));
+      formDataToSend.append("slug", sanitizeSlug(formData.slug));
       formDataToSend.append("date", formData.date);
 
       if (selectedAuthor && selectedAuthor.profilephoto) {

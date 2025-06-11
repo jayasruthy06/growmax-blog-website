@@ -6,14 +6,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from 'next/navigation';
 import { ChevronDown, Users, Handshake, PhoneCall } from 'lucide-react';
+import { useAuth } from '../../hooks/useAuth';
 
-const Header = () => {
-    
-    const[userInfo, setUserInfo] = useState(null); 
+const Header = () => { 
+    const { userInfo, isAuth, fetchLoading, logout } = useAuth();
     const [activeDropdown, setActiveDropdown] = useState(null);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const [isAuth, setIsAuth] = useState(false);
-    const [fetchLoading, setFetchLoading] = useState(false);
     const [mobileActiveDropdown, setMobileActiveDropdown] = useState({
         solutions: false,
         company: false,
@@ -23,50 +21,7 @@ const Header = () => {
     const solutionsRef = useRef(null);
     const companyRef = useRef(null);
     const router = useRouter();
-    
 
-    useEffect(() => {
-        fetchUserData();
-    }, []);
-    
-    const fetchUserData = async () => {
-        setFetchLoading(true);
-    try {
-      const authResponse = await fetch('/api/auth/me', {
-        method: 'GET',
-        headers: {
-          'Cache-Control': 'no-cache',
-        },
-      });
-      
-      if (!authResponse.ok) {
-        return;
-      }
-      
-      const authData = await authResponse.json();
-      const userEmail = authData.email;
-      setIsAuth(true);
-      
-      const timestamp = new Date().getTime();
-      const response = await fetch(`/api/users?email=${encodeURIComponent(userEmail)}&t=${timestamp}`, {
-        method: 'GET',
-        headers: {
-          'Cache-Control': 'no-cache',
-        },
-      });
-      
-      const data = await response.json();
-      
-
-      if (data.success) {
-        setUserInfo(data.user);
-      } 
-    } catch (error) {
-      console.error('❌ Error fetching user:', error);
-    } finally {
-      setFetchLoading(false);
-    }
-  };
     const handleMenu = () => {
         setActiveDropdown(null);
         setMobileMenuOpen(false);
@@ -89,6 +44,11 @@ const Header = () => {
                 features: false
             });
     }
+
+    const handleLogout = () => {
+        logout();
+    }
+
     const toggleSolutions = () => {
         setActiveDropdown(activeDropdown === 'solutions' ? null : 'solutions');
     };
@@ -136,7 +96,10 @@ const Header = () => {
         };
     }, []);
 
-   
+   const handleLoginRoute = () => {
+    router.push("/login");
+   }
+
     useEffect(() => {
         const handleResize = () => {
             if (window.innerWidth > 940) {
@@ -235,6 +198,7 @@ const Header = () => {
                         </div>
                         <div className="nav-bar-ele"><Link href="/integrations" onClick={handleMenu}>Integrations</Link></div>
                         <div className="nav-bar-ele"><Link href="/blog" onClick={handleMenu}>Blog</Link></div>
+                        {isAuth === 'loading' || fetchLoading?(<div></div>): isAuth === 'true' && userInfo ? (<div className="nav-bar-ele"><Link href="/verified/dashboard" onClick={handleMenu}>Dashboard</Link></div>) : (<div></div>)}
                     </nav>
 
                     
@@ -250,21 +214,57 @@ const Header = () => {
                
                 <div className="button-container desktop-button" style={{display:"flex", flexDirection:"row", alignItems:"center", justifyContent:"center", gap: "30px"}}>
                     <button className="talk-to-us" onClick={handleButtonMenu}>Talk To Us<PhoneCall /></button>
-                    {isAuth && userInfo && (
-                        <div className="admin-details-box">
-                            <Link href="/admin/dashboard" className="admin-logged-in-pfp">
-                                <Image 
-                                    src={userInfo.profilephoto || "/images/default-picture.jpg"} 
-                                    width={40} 
-                                    height={40} 
-                                    alt="Admin Profile Photo"
-                                />
-                            </Link>
+                    {isAuth === 'loading' || fetchLoading ? (
+                    <div></div>
+                    ) : isAuth === 'true' && userInfo ? (
+                        <div className="admin-details-box" style={{ display: "flex", flexDirection: "row", gap: "10px", alignItems: "center", position: "relative" }}>
+                        <Image
+                            src={userInfo.profilephoto || "/images/default-picture.jpg"}
+                            width={40}
+                            height={40}
+                            alt="Admin Profile Photo"
+                            style={{ cursor: "pointer" }}
+                        />
+                        <button 
+                            onClick={handleLogout}
+                            style={{
+                                fontFamily: "Outfit",
+                                fontSize: "15px",
+                                backgroundColor: "var(--orange-primary)",
+                                color: "white",
+                                padding: "10px",
+                                border: "none",
+                                outline: "none",
+                                borderRadius: "6px",
+                                cursor: "pointer",
+                                boxShadow: "var(--box-shadow)"
+                            }}
+                        >
+                            Logout
+                        </button>
                         </div>
-                    )}
-                </div>
-
-    
+                    ) : (
+                        <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+                        <button
+                            style={{
+                                fontFamily: "Outfit",
+                                fontSize: "15px",
+                                backgroundColor: "var(--orange-primary)",
+                                color: "white",
+                                padding: "10px",
+                                border: "none",
+                                outline: "none",
+                                borderRadius: "6px",
+                                cursor: "pointer",
+                                boxShadow: "var(--box-shadow)"
+                        }}
+                        onClick={handleLoginRoute}
+                        >
+                        Log In
+                        </button>
+                        </div>
+                        )}
+                    </div>
                 <div className={`mobile-nav ${mobileMenuOpen ? 'mobile-nav-open' : ''}`}>
                     <div className="mobile-nav-content">
                        
@@ -339,24 +339,62 @@ const Header = () => {
                             </div>
                             </Link>
                         </div>
-                        
+                        {isAuth === 'loading' || fetchLoading?(<div></div>): isAuth === 'true' && userInfo ? (
+                            <div className="mobile-nav-item"><Link href="/verified/dashboard" onClick={handleMenu}><div className="mobile-nav-header">Dashboard</div></Link></div>) : (<div></div>)}
                         <div className="mobile-nav-item" style={{display:"flex", flexDirection:"column", gap:"15px", alignItems: "center", justifyContent: "center", padding: "15px 0"}}>
                             <button className="mobile-talk-to-us" onClick={handleButtonMenu}>Talk To Us<PhoneCall /></button>
-                            {isAuth && userInfo && (
-                                <div className="admin-details-box" style={{display:"flex", flexDirection:"row", gap:"10px", alignItems: "center"}}>
-                                    <Link href="/admin/dashboard" className="admin-logged-in-pfp" style={{display:"flex", flexDirection:"row", gap: "10px"}}>
-                                        <Image 
-                                            src={userInfo.profilephoto || "/images/default-picture.jpg"} 
-                                            width={40} 
-                                            height={40} 
-                                            alt="Admin Profile Photo"
-                                        />
-                                        <p style={{fontFamily:"Outfit", fontSize:"15px", color: "grey"}}>
-                                            {userInfo.email}
-                                        </p>
-                                    </Link>
-                                </div>
-                            )}
+                            {isAuth === 'loading' || fetchLoading ? (
+                    <div></div>
+                    ) : isAuth === 'true' && userInfo ? (
+                        <div className="admin-details-box" style={{ display: "flex", flexDirection: "column", gap: "5px", alignItems: "center" }}>
+                        <div style={{display: "flex", flexDirection: "row", gap: "10px", alignItems:"center"}}>
+                        <Image
+                            src={userInfo.profilephoto || "/images/default-picture.jpg"}
+                            width={40}
+                            height={40}
+                            alt="Admin Profile Photo"
+                        />
+                        <p style={{fontSize: "14px", color:"var(--text-gray)"}}>{userInfo.email}</p>
+                        </div>
+                        <button 
+                            onClick={handleLogout}
+                            style={{
+                                fontFamily: "Outfit",
+                                fontSize: "15px",
+                                backgroundColor: "var(--orange-primary)",
+                                color: "white",
+                                padding: "10px",
+                                border: "none",
+                                outline: "none",
+                                borderRadius: "6px",
+                                cursor: "pointer",
+                                boxShadow: "var(--box-shadow)"
+                            }}
+                        >
+                            Logout
+                        </button>
+                        </div>
+                    ) : (
+                        <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+                        <button
+                            style={{
+                                fontFamily: "Outfit",
+                                fontSize: "15px",
+                                backgroundColor: "var(--orange-primary)",
+                                color: "white",
+                                padding: "10px",
+                                border: "none",
+                                outline: "none",
+                                borderRadius: "6px",
+                                cursor: "pointer",
+                                boxShadow: "var(--box-shadow)"
+                        }}
+                        onClick={handleLoginRoute}
+                        >
+                        Log In
+                        </button>
+                        </div>
+                        )}
                         </div>
                     </div>
                 </div>

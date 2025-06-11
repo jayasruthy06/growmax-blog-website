@@ -1,5 +1,5 @@
 import React from 'react'
-import AddUser from '../../../../../components/Blog/AddUser'
+import AddUser from '../../../../../../components/Blog/AddUser'
 
 export const metadata = {
   title:"Add an User",

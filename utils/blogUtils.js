@@ -15,7 +15,7 @@ export const deleteBlog = async (blogId) => {
 };
 
 export const handleEditRedirect = (router, blogId) => {
-  router.push(`/admin/dashboard/view-blogs/edit-blogs?id=${blogId}`);
+  router.push(`/verified/dashboard/all/view-blogs/edit-blogs?id=${blogId}`);
 };
 
 export const handleDeleteWithConfirmation = async (blogId, onSuccess, onError) => {

@@ -9,7 +9,8 @@ const outfit = Outfit({
   weight: ["400", "700"],
 });
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+
   return (
     <html lang="en">
       <body className={outfit.className}>

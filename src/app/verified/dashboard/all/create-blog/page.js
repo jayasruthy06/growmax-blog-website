@@ -1,5 +1,5 @@
 import React from 'react'
-import BlogForm from '../../../../../components/Blog/BlogForm';
+import BlogForm from '../../../../../../components/Blog/BlogForm';
 
 export const metadata = {
   title: "Create a Blog - Growmax",

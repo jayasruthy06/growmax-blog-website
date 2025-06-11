@@ -3,6 +3,8 @@ import { ConnectDB } from "../../../../lib/config/db";
 import BlogModel from "../../../../lib/models/BlogModel";
 import ImageKit from "imagekit";
 import { revalidatePath, revalidateTag } from "next/cache";
+import { sanitizeText, sanitizeHTMLBackend, sanitizeSlug } from "../../../../lib/sanitizeClient";
+import sanitize from "mongo-sanitize";
 
 const imagekit = new ImageKit({
   publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
@@ -78,21 +80,60 @@ async function deleteCoverImage(imageUrl) {
 }
 
 export async function POST(request) {
+  const allowedOrigins = [
+    'http://localhost:3000',
+    'https://growmaxio.netlify.app',
+  ];
+
+  const origin = request.headers.get('origin');
+
+  if (origin && !allowedOrigins.includes(origin)) {
+    return new Response(
+      JSON.stringify({ error: 'Unauthorized origin' }),
+      { status: 403, headers: { 'Content-Type': 'application/json' } }
+    );
+  }
   await ConnectDB();
   try {
     const formData = await request.formData();
-    
+    console.log("reached after awaiting");
     const title = formData.get("title");
+    console.log(`before sani: ${title}`);
+    const sanititle = sanitizeText(title);
+    console.log(`after sani: ${sanititle}`);
     const description = formData.get("description");
+    console.log(`before sani: ${description}`);
+    const sanidesc = sanitizeText(description);
+    console.log(`after sani: ${sanidesc}`);
     const authorname = formData.get("authorname");
+    console.log(`before sani: ${authorname}`);
+    const saniauthor = sanitizeText(authorname);
+    console.log(`after sani: ${saniauthor}`);
     const category = formData.get("category");
+    console.log(`before sani: ${category}`);
+    const sanicat = sanitizeText(category);
+    console.log(`after sani: ${sanicat}`);
     const content = formData.get("content");
+    console.log(`before sani: ${content}`);
+    try {
+  if (!content || typeof content !== "string") throw new Error("Content must be a string");
+  const sanicontent = sanitizeHTMLBackend(content);
+  console.log(`after sani: ${sanicontent}`);
+} catch (err) {
+  console.error("sanitizeHTML error:", err);
+  return NextResponse.json(
+    { success: false, message: "Content sanitization failed", error: err.message },
+    { status: 400 }
+  );
+}
     const slug = formData.get("slug");
+    console.log(`before sani: ${slug}`);
+    const sanislug = sanitizeSlug(slug);
+    console.log(`after sani: ${sanislug}`);
     const date = formData.get("date");
     const coverImage = formData.get("coverimg"); 
     const authorimg = formData.get("authorimg");
-    
-    
+   
     if (!title || !description || !authorname || !category || !content || !slug) {
       return NextResponse.json(
         { success: false, message: "All fields are required" },
@@ -129,9 +170,9 @@ export async function POST(request) {
       );
     }
 
-   
+   console.log("Waiting to upload image")
     const coverimg = await uploadBlogCoverImage(coverImage, slug);
-
+    console.log("Uploaded img")
     const blogData = {
       title,
       description,
@@ -147,9 +188,10 @@ export async function POST(request) {
       blogData.authorimg = authorimg;
     }
 
+    console.log("waiting to save blog")
     const blog = new BlogModel(blogData);
     await blog.save();
-
+    console.log("saved blog")
     try{
       revalidatePath('/blog');
       revalidatePath(`blog/${slug}`);
@@ -181,7 +223,20 @@ export async function POST(request) {
   }
 }
 
-export async function GET() {
+export async function GET(request) {
+  const allowedOrigins = [
+    'http://localhost:3000',
+    'https://growmaxio.netlify.app',
+  ];
+
+  const origin = request.headers.origin;
+
+  if (origin && !allowedOrigins.includes(origin)) {
+    return new Response(
+      JSON.stringify({ error: 'Unauthorized origin' }),
+      { status: 403, headers: { 'Content-Type': 'application/json' } }
+    );
+  }
   await ConnectDB();
   try {
     const blogs = await BlogModel.find({}).sort({ date: -1 });
@@ -198,18 +253,31 @@ export async function GET() {
 }
 
 export async function PUT(request) {
+  const allowedOrigins = [
+    'http://localhost:3000',
+    'https://growmaxio.netlify.app',
+  ];
+
+  const origin = request.headers.get('origin');
+
+  if (origin && !allowedOrigins.includes(origin)) {
+    return new Response(
+      JSON.stringify({ error: 'Unauthorized origin' }),
+      { status: 403, headers: { 'Content-Type': 'application/json' } }
+    );
+  }
   await ConnectDB();
   try {
     const formData = await request.formData();
     
     
     const id = formData.get("id");
-    const title = formData.get("title");
-    const description = formData.get("description");
-    const authorname = formData.get("authorname");
-    const category = formData.get("category");
-    const content = formData.get("content");
-    const slug = formData.get("slug");
+    const title = sanitizeText(formData.get("title"));
+    const description = sanitizeText(formData.get("description"));
+    const authorname = sanitizeText(formData.get("authorname"));
+    const category = sanitizeText(formData.get("category"));
+    const content = sanitizeHTMLBackend(formData.get("content"));
+    const slug = sanitizeSlug(formData.get("slug"));
     const date = formData.get("date");
     const coverImage = formData.get("coverimg"); 
     const authorimg = formData.get("authorimg");
@@ -220,8 +288,8 @@ export async function PUT(request) {
         { status: 400 }
       );
     }
-
-    const existingBlog = await BlogModel.findById(id);
+    const cleanId = sanitize(id).trim();
+    const existingBlog = await BlogModel.findById(cleanId);
     if (!existingBlog) {
       return NextResponse.json(
         { success: false, message: "Blog not found" },
@@ -265,8 +333,6 @@ if (slugChanged && (!coverImage || coverImage.size === 0)) {
 
   coverimg = result.url;
 }
-
-
 
     const updateData = {
       title,
@@ -322,6 +388,19 @@ if (slugChanged && (!coverImage || coverImage.size === 0)) {
 }
 
 export async function DELETE(request) {
+  const allowedOrigins = [
+    'http://localhost:3000',
+    'https://growmaxio.netlify.app',
+  ];
+
+  const origin = request.headers.get('origin');
+
+  if (origin && !allowedOrigins.includes(origin)) {
+    return new Response(
+      JSON.stringify({ error: 'Unauthorized origin' }),
+      { status: 403, headers: { 'Content-Type': 'application/json' } }
+    );
+  }
   await ConnectDB();
   try {
     const { searchParams } = new URL(request.url);
@@ -333,9 +412,8 @@ export async function DELETE(request) {
         { status: 400 }
       );
     }
-
-   
-    const existingBlog = await BlogModel.findById(id);
+    const cleanId = sanitize(id).trim();
+    const existingBlog = await BlogModel.findById(cleanId);
     if (!existingBlog) {
       return NextResponse.json(
         { success: false, message: "Blog not found" },
@@ -344,7 +422,7 @@ export async function DELETE(request) {
     }
 
     const coverimage = existingBlog.coverimg
-    await BlogModel.findByIdAndDelete(id);
+    await BlogModel.findByIdAndDelete(cleanId);
 
     try {
       revalidatePath('/blog');
