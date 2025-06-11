@@ -37,11 +37,11 @@ A production-ready, SEO-optimized **introductory website** for Growmax, built us
 
 ## 🧰 Tech Stack
 
-- **Frontend**: Next.js (App Router), React
-- **Backend**: Node.js, MongoDB, Mongoose
-- **Authentication**: JWT + Refresh Tokens with httpOnly cookies
-- **Styling**: CSS Modules or your preferred styling solution
-- **Database**: MongoDB (via Mongoose ORM)
+- **Frontend**: Next.js (App Router), React  
+- **Backend**: Node.js, MongoDB, Mongoose  
+- **Authentication**: JWT + Refresh Tokens with httpOnly cookies  
+- **Styling**: CSS Modules 
+- **Database**: MongoDB (via Mongoose ORM)  
 
 ---
 
@@ -52,27 +52,30 @@ A production-ready, SEO-optimized **introductory website** for Growmax, built us
 ```bash
 git clone https://github.com/your-username/growmax-landing-page.git
 cd growmax-landing-page
+```
 
-### 2.  Install Dependencies
+### 2. Install Dependencies
 ```bash
 npm install
+```
 
 ### 3. Configure Environment Variables
-Create a .env.local file in the root with:
+Create a .env.local file in the root directory with the following:
 ```bash
 MONGODB_URI=your_mongo_uri
 JWT_SECRET=your_jwt_secret
 REFRESH_SECRET=your_refresh_token_secret
 CORS_ORIGIN=http://localhost:3000
+```
 
 ### 4. Start the Development Server
 ```bash
 npm run dev
+Open your browser and navigate to http://localhost:3000
+```
 
----
+### 🌐 Live Demo
+🔗 https://growmaxio.netlify.app/
 
-## 📝 Author
+### 📝 Author
 Jayasruthy Karthikeyan
-
-## 🌐 Live Demo
-https://growmaxio.netlify.app/
