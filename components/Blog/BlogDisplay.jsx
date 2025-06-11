@@ -9,20 +9,21 @@ const BlogDisplay = ({ filtered }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentpg, setCurrentPg] = useState(1); 
-
+  const [totalPages, setTotalPages] = useState(1);
   const itemsperpage = 4;
 
   useEffect(() => {
-    fetchBlogs();
+    fetchBlogs(1);
   }, []);
 
-  const fetchBlogs = async () => {
+  const fetchBlogs = async (page=1) => {
     try {
-      const response = await fetch('/api/blogs');
+      const response = await fetch(`/api/blogs?page=${page}&limit=${itemsperpage}`);
       const data = await response.json();
 
       if (data.success) {
         setBlogs(data.blogs);
+        setTotalPages(data.totalPages);
       } else {
         setError('Failed to fetch blogs');
       }
@@ -36,26 +37,19 @@ const BlogDisplay = ({ filtered }) => {
   if (loading) return <div style={{ padding: '20px' , fontSize: "20px", display:"flex", alignItems:"center", justifyContent:"center"}}>Loading...</div>;
   if (error) return <div style={{ padding: '20px' , fontSize: "20px", display:"flex", alignItems:"center", justifyContent:"center" }}>Error: {error}</div>;
 
-  const filteredItems = filtered !== "NULL"
-    ? blogs.filter(item => item.category === filtered)
-    : blogs;
-
-  const totalPages = Math.ceil(filteredItems.length / itemsperpage);
-  const startIdx = (currentpg - 1) * itemsperpage;
-  const currentItems = filteredItems.slice(startIdx, startIdx + itemsperpage);
-
   const handlePageChange = (page) => {
     setCurrentPg(page);
+    fetchBlogs(page);
   };
   
 
   return (
     <div>
       <div className={styles.blogListContainerDisplay}>
-        {filteredItems.length === 0 ? (
+        {blogs.length === 0 ? (
           <p style={{ padding: '20px' , display:"flex", fontSize: "20px", alignItems:"center", justifyContent:"center" }}>No blogs found.</p>
         ) : (
-          currentItems.map((item, index) => (
+          blogs.map((item, index) => (
             <BlogItem
               key={item.slug || index}
               slug={item.slug}
@@ -71,7 +65,7 @@ const BlogDisplay = ({ filtered }) => {
         )}
       </div>
 
-      {filteredItems.length > 0 && (
+      {totalPages > 1 && (
         <div className={styles.paginationControls}>
           {Array.from({ length: totalPages }, (_, i) => (
             <button

@@ -239,10 +239,18 @@ export async function GET(request) {
   }
   await ConnectDB();
   try {
-    const blogs = await BlogModel.find({}).sort({ date: -1 });
+
+    const {searchParams} = new URL(request.url);
+    const page = parseInt(searchParams.get('page')) || 1;
+    const limit = parseInt(searchParams.get('limit')) || 4;
+    const skip = (page-1) * limit;
+    const total = await BlogModel.countDocuments({});
+    const blogs = await BlogModel.find({}).sort({ date: -1 }).skip(skip).limit(limit).select("-content");
     return NextResponse.json({
       success: true,
-      blogs
+      blogs, 
+      totalPages: Math.ceil(total/limit),
+      currentPage: page
     });
   } catch (error) {
     return NextResponse.json(
