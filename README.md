@@ -1,36 +1,78 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🏢 Growmax Company Landing Page
 
-## Getting Started
+A production-ready, SEO-optimized **introductory website** for Growmax, built using **Next.js** and **MongoDB**. This modern landing page showcases company details, blogs, and contact information. It includes secure session management, role-based access control, and essential backend protections — making it ideal for real-world deployment.
 
-First, run the development server:
+---
+
+## 🚀 Features
+
+- 🔐 **Authentication & Session Management**
+  - Secure login using **JWT (httpOnly cookies)**
+  - Refresh token rotation with silent token renewal
+  - Role-based session access for Admins and Editors
+
+- 👥 **Role-Based Access**
+  - Admin-only dashboards
+  - Editor access to shared content management routes
+
+- ✍️ **Blog System**
+  - Full CRUD functionality (Create, Read, Update, Delete)
+  - SEO-friendly URLs and dynamic metadata
+
+- 📞 **Contact Section**
+  - Clean contact form and company overview
+  - Ready to integrate with backend mailer or form service
+
+- 🛡️ **Security**
+  - XSS protection with input sanitization
+  - CORS policy configuration
+  - Secure cookie handling and environment-based secrets
+
+- 🌐 **SEO & Performance**
+  - Dynamic metadata with `next/head`
+  - Optimized images and lazy loading
+  - Fast routing and SSR support
+
+---
+
+## 🧰 Tech Stack
+
+- **Frontend**: Next.js (App Router), React
+- **Backend**: Node.js, MongoDB, Mongoose
+- **Authentication**: JWT + Refresh Tokens with httpOnly cookies
+- **Styling**: CSS Modules or your preferred styling solution
+- **Database**: MongoDB (via Mongoose ORM)
+
+---
+
+## ⚙️ Getting Started
+
+### 1. Clone the Repository
 
 ```bash
+git clone https://github.com/your-username/growmax-landing-page.git
+cd growmax-landing-page
+
+### 2.  Install Dependencies
+```bash
+npm install
+
+### 3. Configure Environment Variables
+Create a .env.local file in the root with:
+```bash
+MONGODB_URI=your_mongo_uri
+JWT_SECRET=your_jwt_secret
+REFRESH_SECRET=your_refresh_token_secret
+CORS_ORIGIN=http://localhost:3000
+
+### 4. Start the Development Server
+```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## 📝 Author
+Jayasruthy Karthikeyan
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🌐 Live Demo
+https://growmaxio.netlify.app/
