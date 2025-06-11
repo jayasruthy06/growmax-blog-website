@@ -6,11 +6,14 @@ import BlogItemDash from '../../components/Authentication/BlogItemDash';
 import { handleEditRedirect, handleDeleteWithConfirmation } from "../../utils/blogUtils";
 import styles from "./DisplayBlogDash.module.css";
 import Notification from './Notification';
+import styles2 from "../Blog/BlogList.module.css";
 
 const DisplayBlogDash = () => {
   const [adminblogs, setAdminBlogs] = useState([]);
   const [adminloading, setAdminLoading] = useState(true);
   const [adminerror, setAdminError] = useState(null);
+  const [totalPages, setTotalPages] = useState(1);
+  const [currentpg, setCurrentPg] = useState(1);
   const [notification, setNotification] = useState({
       isVisible: false,
       type: 'success',
@@ -18,14 +21,16 @@ const DisplayBlogDash = () => {
   });
 
   const router = useRouter();
+  const itemsperpage = 4;
 
-  const fetchBlogs = async () => {
+  const fetchBlogs = async (page=1) => {
     try {
-      const response = await fetch('/api/blogs');
+      const response = await fetch(`/api/blogs?page=${page}&limit=${itemsperpage}`);
       const data = await response.json();
 
       if (data.success) {
         setAdminBlogs(data.blogs);
+        setTotalPages(data.totalPages);
       } else {
         setAdminError('Failed to fetch blogs');
       }
@@ -37,7 +42,7 @@ const DisplayBlogDash = () => {
   };
 
   useEffect(() => {
-    fetchBlogs();
+    fetchBlogs(1);
   }, []);
 
   const showNotification = (type, message) => {
@@ -65,6 +70,11 @@ const DisplayBlogDash = () => {
     );
   };
 
+  const handlePageChange = (page) => {
+    setCurrentPg(page);
+    fetchBlogs(page)
+  }
+
   if (adminloading)
     return <div style={{ padding: '20px', fontSize: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Loading...</div>;
 
@@ -73,6 +83,7 @@ const DisplayBlogDash = () => {
 
   return (
     <div className={styles.displayBlogDashContainer}>
+    <div>
       <Notification
         type={notification.type}
         message={notification.message}
@@ -99,6 +110,20 @@ const DisplayBlogDash = () => {
         ))
       )}
     </div>
+    {totalPages > 1 && (
+        <div className={styles2.paginationControls}>
+          {Array.from({ length: totalPages }, (_, i) => (
+            <button
+              key={i}
+              onClick={() => handlePageChange(i + 1)}
+              className={`${styles2.paginationButton} ${currentpg === i + 1 ? styles2.active : ''}`}
+            >
+              {i + 1}
+            </button>
+          ))}
+        </div>
+      )}
+      </div>
   );
 };
 

@@ -13,12 +13,12 @@ const BlogDisplay = ({ filtered }) => {
   const itemsperpage = 4;
 
   useEffect(() => {
-    fetchBlogs(1);
-  }, []);
+    fetchBlogs(currentpg, filtered);
+  }, [currentpg, filtered]);
 
-  const fetchBlogs = async (page=1) => {
+  const fetchBlogs = async (page=1, category=filtered) => {
     try {
-      const response = await fetch(`/api/blogs?page=${page}&limit=${itemsperpage}`);
+      const response = await fetch(`/api/blogs?page=${page}&limit=${itemsperpage}&category=${encodeURIComponent(category)}`);
       const data = await response.json();
 
       if (data.success) {

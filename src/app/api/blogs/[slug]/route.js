@@ -32,15 +32,9 @@ export async function GET(request, { params }) {
       );
     }
 
-    let blog;
-    
-    if (mongoose.Types.ObjectId.isValid(slug)) {
-      const cleanSlug = sanitizeSlug(slug);
-      blog = await BlogModel.findById(cleanSlug);
-    } else {
-      const cleanSlug = sanitizeSlug(slug);
-      blog = await BlogModel.findOne({ slug: cleanSlug });
-    }
+    const cleanSlug = sanitizeSlug(slug);
+
+    const blog = await BlogModel.findOne({ slug: cleanSlug }).lean();
     
     if (!blog) {
       return NextResponse.json(

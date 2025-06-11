@@ -243,9 +243,15 @@ export async function GET(request) {
     const {searchParams} = new URL(request.url);
     const page = parseInt(searchParams.get('page')) || 1;
     const limit = parseInt(searchParams.get('limit')) || 4;
+    const category = searchParams.get("category");
+    
+    const filter ={};
+    if(category && category!== "NULL"){
+      filter.category = category;
+    }
     const skip = (page-1) * limit;
-    const total = await BlogModel.countDocuments({});
-    const blogs = await BlogModel.find({}).sort({ date: -1 }).skip(skip).limit(limit).select("-content");
+    const total = await BlogModel.countDocuments(filter);
+    const blogs = await BlogModel.find(filter).sort({ date: -1 }).skip(skip).limit(limit).select("-content");
     return NextResponse.json({
       success: true,
       blogs, 
