@@ -99,7 +99,7 @@ const EditBlogForm = () => {
         setContent(blog.content || "");
         setExistingCoverImage(blog.coverimg || "");
       } else {
-        console.log(result.status)
+        console.log(result.error)
         showNotification('error', 'Failed to fetch blog data');
         router.push('/verified/dashboard/all/view-blogs');
       }
@@ -251,7 +251,7 @@ const EditBlogForm = () => {
           <p className={styles.createBlogHeading}>Edit Blog Post</p>
           <button 
             type="button" 
-            onClick={() => router.push('/admin/dashboard/view-blogs')}
+            onClick={() => router.push('/verified/dashboard/all/view-blogs')}
             style={{
               padding: '8px 16px',
               backgroundColor: 'white',

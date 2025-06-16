@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { ConnectDB } from "../../../../lib/config/db";
 import BlogModel from "../../../../lib/models/BlogModel";
 import ImageKit from "imagekit";
-import { revalidatePath, revalidateTag } from "next/cache";
 import { sanitizeText, sanitizeHTMLBackend, sanitizeSlug } from "../../../../lib/sanitizeClient";
 import sanitize from "mongo-sanitize";
 
@@ -96,40 +95,12 @@ export async function POST(request) {
   await ConnectDB();
   try {
     const formData = await request.formData();
-    console.log("reached after awaiting");
-    const title = formData.get("title");
-    console.log(`before sani: ${title}`);
-    const sanititle = sanitizeText(title);
-    console.log(`after sani: ${sanititle}`);
-    const description = formData.get("description");
-    console.log(`before sani: ${description}`);
-    const sanidesc = sanitizeText(description);
-    console.log(`after sani: ${sanidesc}`);
-    const authorname = formData.get("authorname");
-    console.log(`before sani: ${authorname}`);
-    const saniauthor = sanitizeText(authorname);
-    console.log(`after sani: ${saniauthor}`);
-    const category = formData.get("category");
-    console.log(`before sani: ${category}`);
-    const sanicat = sanitizeText(category);
-    console.log(`after sani: ${sanicat}`);
-    const content = formData.get("content");
-    console.log(`before sani: ${content}`);
-    try {
-  if (!content || typeof content !== "string") throw new Error("Content must be a string");
-  const sanicontent = sanitizeHTMLBackend(content);
-  console.log(`after sani: ${sanicontent}`);
-} catch (err) {
-  console.error("sanitizeHTML error:", err);
-  return NextResponse.json(
-    { success: false, message: "Content sanitization failed", error: err.message },
-    { status: 400 }
-  );
-}
-    const slug = formData.get("slug");
-    console.log(`before sani: ${slug}`);
-    const sanislug = sanitizeSlug(slug);
-    console.log(`after sani: ${sanislug}`);
+    const title = sanitizeText(formData.get("title"));
+    const description = sanitizeText(formData.get("description"));
+    const authorname = sanitizeText(formData.get("authorname"));
+    const category = sanitizeText(formData.get("category"));
+    const content = sanitizeHTMLBackend(formData.get("content"));
+    const slug = sanitizeSlug(formData.get("slug"));
     const date = formData.get("date");
     const coverImage = formData.get("coverimg"); 
     const authorimg = formData.get("authorimg");
@@ -192,13 +163,7 @@ export async function POST(request) {
     const blog = new BlogModel(blogData);
     await blog.save();
     console.log("saved blog")
-    try{
-      revalidatePath('/blog');
-      revalidatePath(`blog/${slug}`);
-      revalidateTag('blogs');
-    }catch(revalidationError){
-      console.error('Revalidation error:', revalidationError);
-    }
+    
     return NextResponse.json(
       { 
         success: true, 
@@ -366,17 +331,6 @@ if (slugChanged && (!coverImage || coverImage.size === 0)) {
 
     const updatedBlog = await BlogModel.findByIdAndUpdate(id, updateData, { new: true });
     
-    try{
-      revalidatePath('/blog');
-      revalidatePath(`/blog/${slug}`);
-      if(slugChanged){
-        revalidatePath(`/blog/${existingBlog.slug}`);
-      }
-      revalidateTag('blogs');
-    }
-    catch(revalidationError){
-      console.error('Revalidation Error', revalidationError);
-    }
     return NextResponse.json(
       { 
         success: true, 
@@ -438,15 +392,6 @@ export async function DELETE(request) {
     const coverimage = existingBlog.coverimg
     await BlogModel.findByIdAndDelete(cleanId);
 
-    try {
-      revalidatePath('/blog');
-      revalidatePath(`/blog/${blogSlug}`);
-      revalidateTag('blogs');
-    } catch (revalidationError) {
-      console.error('Revalidation error:', revalidationError);
-    }
-
-    
     if (coverimage) {
       await deleteCoverImage(coverimage);
     }

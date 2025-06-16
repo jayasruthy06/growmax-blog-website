@@ -4,6 +4,7 @@ import BlogModel from "../../../../../lib/models/BlogModel";
 import mongoose from "mongoose";
 import { sanitizeSlug, sanitizeText } from "../../../../../lib/sanitizeClient";
 import sanitize from "mongo-sanitize";
+import Blog from "@/app/blog/page";
 
 export async function GET(request, { params }) {
   const allowedOrigins = [
@@ -32,10 +33,21 @@ export async function GET(request, { params }) {
       );
     }
 
-    const cleanSlug = sanitizeSlug(slug);
+    let blog;
 
-    const blog = await BlogModel.findOne({ slug: cleanSlug }).lean();
+    //const cleanSlug = sanitizeSlug(slug);
+
+    //
+    // const blog = await BlogModel.findOne({ slug: cleanSlug }).lean();
     
+    if (mongoose.Types.ObjectId.isValid(slug)){
+      console.log('Searching by ID:', slug);
+      blog = await BlogModel.findById(slug).lean();
+    }else{
+      console.log('Searching by slug:', slug);
+      const cleanSlug = sanitizeSlug(slug);
+      blog = await BlogModel.findOne({slug: cleanSlug}).lean();
+    }
     if (!blog) {
       return NextResponse.json(
         { success: false, message: "Blog not found" },

@@ -67,7 +67,6 @@ const LoginPage = () => {
 
     try {
       setLoggingIn(true);
-      console.log(JSON.stringify({ email, password }))
       const res = await fetch(`/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
